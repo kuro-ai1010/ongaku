@@ -1,0 +1,1087 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BGM用語帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+/* 構成 左寄せの見出し → ムードマップ(点を押すと鳴る) → 固定の操作バー → 3つの章(カードごとに試聴) → プロンプト作成 */
+:root{
+  --bg:#f2f1f6; --surface:#ffffff; --surface2:#ebe9f2; --ink:#17151f; --muted:#5b5868;
+  --line:#dcd9e5; --accent:#5b3fd9; --accent-ink:#ffffff; --accent-soft:#e8e3fb;
+  --stage:#0c0b12; --jp:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f0e15; --surface:#171620; --surface2:#201f2b; --ink:#eeedf5; --muted:#a09db0;
+  --line:#2b2937; --accent:#a592ff; --accent-ink:#0f0e15; --accent-soft:#25203f; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0f0e15; --surface:#171620; --surface2:#201f2b; --ink:#eeedf5; --muted:#a09db0;
+  --line:#2b2937; --accent:#a592ff; --accent-ink:#0f0e15; --accent-soft:#25203f; color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--jp);font-size:15px;line-height:1.75;-webkit-text-size-adjust:100%}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.hero{padding-block:clamp(36px,7vw,72px) 24px}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 16px}
+h1{font-weight:900;font-size:clamp(2.7rem,8vw,4.8rem);line-height:1.05;letter-spacing:-.01em;margin:0 0 20px;text-wrap:balance}
+.lead{max-width:34em;font-size:1.02rem;color:var(--muted);margin:0 0 22px;text-wrap:pretty}
+.steps{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0;padding:0;list-style:none;font-size:.9rem}
+.steps li{display:flex;gap:8px;align-items:baseline}
+.steps span{font:500 11px/1 var(--mono);color:var(--accent)}
+
+/* ムードマップ */
+.mapsec{padding-bottom:30px}
+.mapsec h2{margin:0 0 4px;font-size:1.35rem;font-weight:900}
+.mapsec .sub{margin:0 0 14px;color:var(--muted);font-size:.9rem}
+.map{position:relative;height:clamp(340px,52vw,470px);background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-left:0}
+.map::before,.map::after{content:"";position:absolute;background:var(--line)}
+.map::before{left:50%;top:0;bottom:0;width:1px}
+.map::after{top:50%;left:0;right:0;height:1px}
+.ax{position:absolute;font:500 10.5px var(--mono);color:var(--muted);letter-spacing:.06em;pointer-events:none;z-index:1}
+.ax.t{top:8px;left:50%;transform:translateX(-50%)}
+.ax.b{bottom:8px;left:50%;transform:translateX(-50%)}
+.ax.l{left:8px;top:50%;transform:translateY(-50%) translateY(-12px)}
+.ax.r{right:8px;top:50%;transform:translateY(-50%) translateY(-12px)}
+.dot{position:absolute;transform:translate(-50%,-50%);border:0;background:transparent;padding:0;cursor:pointer;display:flex;align-items:center;gap:5px;z-index:2;white-space:nowrap;min-width:26px;min-height:26px;justify-content:center}
+.dot i{flex:none;width:11px;height:11px;border-radius:50%;background:hsl(var(--h) 70% 52%);box-shadow:0 0 0 3px hsl(var(--h) 70% 52% /.2);transition:transform .15s}
+.dot b{font-weight:700;font-size:.74rem;line-height:1;color:var(--ink)}
+.dot.mood i{border-radius:3px;transform:rotate(45deg)}
+.dot:hover i,.dot.on i{transform:scale(1.35)}
+.dot.mood:hover i,.dot.mood.on i{transform:rotate(45deg) scale(1.35)}
+.dot.on b{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.dot.on{z-index:3}
+.dot.on b{background:var(--surface);padding:3px 7px;border-radius:5px;box-shadow:0 0 0 1px var(--line)}
+@media (max-width:600px){.dot b{display:none}.dot.on b{display:block;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px}.dot.on{z-index:5}}
+.legend{display:flex;gap:16px;margin:10px 0 0 0;font-size:.78rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.legend i.m{border-radius:2px;transform:rotate(45deg)}
+.pick{margin:14px 0 0 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
+.pick .tx{min-width:0;flex:1 1 280px}
+.pick .nm{font-size:1.15rem;font-weight:900;line-height:1.4}
+.pick .nm small{font:500 11.5px var(--mono);color:var(--muted);margin-left:8px}
+.pick p{margin:2px 0 0;font-size:.88rem;color:var(--muted)}
+.pick .ac{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:6px;padding:5px 14px;font-size:.84rem;cursor:pointer;text-decoration:none;display:inline-block;line-height:1.5}
+.btn:hover,.btn.fill{background:var(--accent);color:var(--accent-ink)}
+
+/* 操作バー */
+.bar{position:relative;z-index:20;background:var(--bg);border-block:1px solid var(--line)}
+.bar-in{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding-block:10px}
+.search{flex:1 1 240px;min-width:0;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0 12px}
+.search input{flex:1;min-width:0;border:0;background:transparent;padding:9px 0;outline:0}
+.search:focus-within{border-color:var(--accent)}
+.search svg{flex:none;color:var(--muted)}
+.count{font:500 12px var(--mono);color:var(--muted);min-width:4.5em;text-align:right}
+.vol{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted)}
+.vol input{width:90px;accent-color:var(--accent)}
+.chips{flex:1 1 100%;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 14px;font-size:.84rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+@media (min-width:760px){.bar{position:sticky;top:env(safe-area-inset-top,0px)}}
+
+/* 章 */
+main{padding-block:8px 40px}
+.sec{padding-top:52px;scroll-margin-top:96px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-bottom:6px}
+.sec h2{margin:0;font-size:1.65rem;font-weight:900;line-height:1.3}
+.sec .en{font:500 12px var(--mono);color:var(--muted);letter-spacing:.06em}
+.sec-lead{margin:0 0 22px;color:var(--muted);max-width:42em}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr))}
+.empty{padding:60px 0;text-align:center;color:var(--muted)}
+
+/* カード */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0;scroll-margin-top:90px}
+.card.flash{outline:2px solid var(--accent)}
+.frame{position:relative;aspect-ratio:16/10;background:var(--stage);max-width:100%;cursor:pointer;overflow:hidden;touch-action:manipulation}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{position:absolute;top:12px;left:14px;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none}
+.hud span{font:500 10.5px/1.5 var(--mono);color:#fff;background:rgba(10,10,16,.66);padding:1px 7px;border-radius:4px;white-space:nowrap}
+.play{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#111;display:grid;place-items:center;cursor:pointer;padding:0}
+.play svg{width:16px;height:16px;fill:currentColor}
+.play .st{display:none}
+.card.is-on .play .pl{display:none}
+.card.is-on .play .st{display:block}
+.card.is-on .play{background:var(--accent);color:var(--accent-ink)}
+.body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.names{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.card h3{margin:0;font-size:1.2rem;font-weight:900;line-height:1.35}
+.card .en{font:500 11.5px var(--mono);color:var(--muted)}
+.desc{margin:0;font-size:.92rem;text-wrap:pretty}
+.meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;margin:0}
+.meters div{display:flex;flex-direction:column;gap:3px;font-size:.72rem;color:var(--muted)}
+.meters i{display:block;height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.meters i s{display:block;height:100%;background:var(--accent);border-radius:3px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin:0;padding:0;list-style:none}
+.tags li{font-size:.76rem;line-height:1.5;padding:1px 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.use{margin:0;font-size:.86rem;color:var(--muted)}
+.use dt{display:inline;font-weight:700;color:var(--ink);margin-right:.6em}
+.use dd{display:inline;margin:0}
+.prompt{margin-top:auto;background:var(--surface2);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.prompt .lbl{font:500 10.5px var(--mono);letter-spacing:.08em;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.ptext{margin:0;font:400 12.5px/1.7 var(--mono);user-select:text;overflow-wrap:anywhere}
+.copy{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:6px;padding:2px 12px;font-size:.78rem;cursor:pointer}
+.copy:hover{background:var(--accent);color:var(--accent-ink)}
+
+/* プロンプト作成 */
+.build{padding-top:56px}
+.bld{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bld>div{padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.bld>div+div{border-left:1px solid var(--line);background:var(--surface2)}
+.fld label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}
+.fld select{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.opts{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.opts input{accent-color:var(--accent)}
+.out{font:400 13px/1.8 var(--mono);margin:0;user-select:text;overflow-wrap:anywhere;min-height:5em}
+@media (max-width:760px){.bld{grid-template-columns:minmax(0,1fr)}.bld>div+div{border-left:0;border-top:1px solid var(--line)}}
+.combo{padding-top:40px}
+.combos{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr))}
+.combo-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.combo-card h3{margin:0;font-size:1rem;font-weight:900}
+.combo-card p{margin:0;font-size:.86rem;color:var(--muted)}
+.combo-card .tg{display:flex;flex-wrap:wrap;gap:4px}
+.combo-card .tg span{font-size:.76rem;background:var(--accent-soft);color:var(--accent);padding:1px 9px;border-radius:999px}
+
+.foot{padding-block:36px 90px;color:var(--muted);font-size:.84rem;display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:space-between}
+.foot p{margin:0;max-width:44em}
+.now{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);border-radius:999px;padding:6px 8px 6px 16px;display:flex;align-items:center;gap:10px;font-size:.84rem;max-width:calc(100% - 32px);transform:translateY(80px);opacity:0;pointer-events:none;transition:transform .2s,opacity .2s}
+.now.show{transform:none;opacity:1;pointer-events:auto}
+.now span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.now button{flex:none;border:0;background:var(--bg);color:var(--ink);border-radius:999px;padding:3px 14px;cursor:pointer;font-size:.8rem}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);font-size:.84rem;padding:8px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+<header class="hero wrap">
+  <p class="kicker">BGM &amp; SFX glossary</p>
+  <h1>BGM用語帳</h1>
+  <p class="lead">曲のジャンル、ムード、効果音の呼び名を、実際に鳴る音と動きで確かめられる見本帳です。気に入った言葉は、そのままSunoなどの音楽生成にコピーして使えます。</p>
+  <ol class="steps">
+    <li><span>1</span>再生ボタンで聴く</li>
+    <li><span>2</span>気に入った言葉をコピー</li>
+    <li><span>3</span>生成AIのスタイル欄に貼る</li>
+  </ol>
+</header>
+
+<section class="wrap mapsec" aria-labelledby="map-h">
+  <h2 id="map-h">ムードマップ</h2>
+  <p class="sub">点を押すと、その曲調が鳴ります。右ほど明るく、上ほど激しい位置です。</p>
+  <div class="map" id="map">
+    <span class="ax t">はげしい</span><span class="ax b">おだやか</span><span class="ax l">暗い</span><span class="ax r">明るい</span>
+  </div>
+  <div class="legend"><span><i></i>ジャンル</span><span><i class="m"></i>ムード</span></div>
+  <div class="pick" id="pick" hidden>
+    <div class="tx"><div class="nm" id="pk-nm"></div><p id="pk-ds"></p></div>
+    <div class="ac"><button class="btn fill" id="pk-cp" type="button">プロンプトをコピー</button><a class="btn" id="pk-go" href="#">カードを見る</a></div>
+  </div>
+</section>
+
+<div class="bar" id="bar">
+  <div class="wrap bar-in">
+    <label class="search" for="q">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="用語を探す（例 ローファイ、雨、切ない）" autocomplete="off">
+    </label>
+    <label class="vol" for="vol">音量<input id="vol" type="range" min="0" max="100" value="70"></label>
+    <span class="count" id="count" aria-live="polite"></span>
+    <div class="chips" id="chips" role="group" aria-label="種類で絞り込む"></div>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<section class="wrap build" id="build" aria-labelledby="bl-h">
+  <div class="sec-head"><h2 id="bl-h">プロンプトを組み立てる</h2><span class="en">Style prompt builder</span></div>
+  <p class="sec-lead">ジャンルとムードを選ぶと、Sunoのスタイル欄に貼れる英語の指定文ができます。</p>
+  <div class="bld">
+    <div>
+      <div class="fld"><label for="b-g">ジャンル</label><select id="b-g"></select></div>
+      <div class="fld"><label for="b-m">ムード</label><select id="b-m"></select></div>
+      <div class="opts">
+        <label for="b-i"><input type="checkbox" id="b-i" checked>歌なし（インスト）</label>
+        <label for="b-l"><input type="checkbox" id="b-l">ループ向き</label>
+        <label for="b-b"><input type="checkbox" id="b-b" checked>BPMを入れる</label>
+      </div>
+      <div><button class="btn" id="b-play" type="button">この組み合わせの元の曲を聴く</button></div>
+    </div>
+    <div>
+      <div class="lbl" style="font:500 10.5px var(--mono);letter-spacing:.08em;color:var(--muted)">STYLE OF MUSIC</div>
+      <p class="out" id="b-out"></p>
+      <div><button class="btn fill" id="b-copy" type="button">コピー</button></div>
+    </div>
+  </div>
+  <div class="combo">
+    <div class="sec-head"><h2 style="font-size:1.25rem">組み合わせ例</h2></div>
+    <div class="combos" id="combos"></div>
+  </div>
+</section>
+
+<footer class="wrap foot">
+  <p>試聴音はブラウザ内で作った簡易な音で、実際の生成結果とは音質が異なります。曲調の違いを見分けるための目安です。</p>
+  <p>プロンプトは英語を基本に書いてあります。生成サービスによって反応が変わるので、数回試して調整してください。</p>
+</footer>
+<div class="now" id="now"><span id="now-t"></span><button id="now-s" type="button">停止</button></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+/* 試聴エンジン。WebAudioで曲調と効果音をその場で合成する */
+var AUD=(function(){
+ var AC=null,cur=null,volume=.7,NB={};
+ var Q={maj:[0,4,7],min:[0,3,7],m7:[0,3,7,10],maj7:[0,4,7,11],'7':[0,4,7,10],m9:[0,3,7,10,14],maj9:[0,4,7,11,14],sus2:[0,2,7],sus4:[0,5,7],add9:[0,4,7,14],dim:[0,3,6],'5':[0,7],'6':[0,4,7,9],m6:[0,3,7,9],'9':[0,4,7,10,14],clus:[0,1,6,7],hdim:[0,3,6,10]};
+ var QL={maj:'',min:'m',m7:'m7',maj7:'maj7','7':'7',m9:'m9',maj9:'maj9',sus2:'sus2',sus4:'sus4',add9:'add9',dim:'dim','5':'5','6':'6',m6:'m6','9':'9',clus:'cluster',hdim:'m7♭5'};
+ var NN=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],SH=false;
+ function mtof(m){return 440*Math.pow(2,(m-69)/12)}
+ function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+ function fold(m,lo){return lo+(((m-lo)%12)+12)%12}
+ function voicing(root,ints,lo,hi){var base=fold(root,lo),o=[],i,m;for(i=0;i<ints.length;i++){m=base+ints[i];while(m>hi)m-=12;o.push(m)}return o.sort(function(a,b){return a-b})}
+ function label(root,q){return (SH?NS:NN)[((root%12)+12)%12]+QL[q]}
+
+ /* ---------- 構成（イベント列）の作成 ---------- */
+ function plan(P){
+  if(P._ev)return P._ev;
+  var rnd=mul(P.seed||11),B=P.bars,L=B*16,ev=[],dr=P.dr||{},ch=[],b,i,p,c,str,k,lay,x;
+  SH=[4,6,11].indexOf(P.root%12)>=0;
+  for(b=0;b<B;b++){c=P.prog[b%P.prog.length];ch.push({root:P.root+c[0],q:c[1],ints:Q[c[1]],name:label(P.root+c[0],c[1])})}
+  P._ch=ch;
+  var DM=[['k','kick'],['s','snare'],['h','hat'],['o','oh'],['c','clap'],['t','tom'],['b','boom'],['r','rim'],['sh','shaker']];
+  DM.forEach(function(m){
+   str=dr[m[0]];if(!str)return;
+   for(p=0;p<L;p++){
+    x=str.charAt(p%str.length);if(x==='.'||x===' '||x==='-')continue;
+    var v=x==='o'?.55:x==='g'?.3:1;if(m[0]==='h'||m[0]==='sh')v*=(dr.hv||1);if(P.hum)v*=.88+rnd()*.24;
+    if(x==='r'){ev.push({k:'dr',i:m[1],s:p,v:.8,st:dr});ev.push({k:'dr',i:m[1],s:p+.5,v:.55,st:dr})}
+    else ev.push({k:'dr',i:m[1],s:p,v:v,st:dr});
+   }
+  });
+  if(dr.fill){for(i=0;i<4;i++)ev.push({k:'dr',i:'snare',s:L-4+i,v:.45+i*.12,st:dr})}
+  (P.lay||[]).forEach(function(lay){
+   var r=lay.r,v=lay.v==null?.5:lay.v;
+   if(r==='pad'){
+    var hold=lay.hold||1;
+    for(b=0;b<B;b+=hold){var nt=voicing(ch[b].root,ch[b].ints,lay.lo||52,lay.hi||76);ev.push({k:'ps',i:lay.i||'pad',s:b*16,d:16*hold,v:v,n:nt,o:lay})}
+   }
+   if(r==='chord'){
+    var pat=lay.pat||'x...............',lo=lay.lo||55,hi=lay.hi||79,rate=lay.rate||2,seq=lay.seq||[0,1,2,1];
+    for(b=0;b<B;b++){
+     var cs=voicing(ch[b].root,ch[b].ints,lo,hi);
+     if(lay.mode==='arp'){
+      var tones=cs.concat(cs.map(function(m){return m+12}));
+      for(p=0;p<16;p+=rate){
+       if(pat.charAt((b*16+p)%pat.length)==='.')continue;
+       var ix=seq[(p/rate)%seq.length];
+       ev.push({k:'ch',i:lay.i,s:b*16+p,d:rate*(lay.gate||.9),v:v*(p%4===0?1:.8),n:[tones[ix%tones.length]],o:lay});
+      }
+     }else{
+      for(p=0;p<16;p++){
+       x=pat.charAt((b*16+p)%pat.length);if(x==='.')continue;
+       var nx=1;while(nx<16&&pat.charAt((b*16+p+nx)%pat.length)==='.')nx++;
+       ev.push({k:'ch',i:lay.i,s:b*16+p,d:Math.min(nx,lay.max||8)*(lay.gate||.95),v:v*(x==='o'?.6:1),n:cs,o:lay});
+      }
+     }
+    }
+   }
+   if(r==='bass'){
+    var blo=lay.lo||36,bp=lay.pat||'x...............';
+    if(lay.walk){
+     for(b=0;b<B;b++){
+      var cc=ch[b],nx2=ch[(b+1)%B],tn=[fold(cc.root,blo),fold(cc.root+cc.ints[1],blo),fold(cc.root+7,blo),fold(cc.root,blo)+12];
+      var ap=fold(nx2.root,blo)+(rnd()<.5?-1:1);
+      var seqn=[tn[0],tn[1+(rnd()<.5?1:0)],tn[2],ap];
+      for(k=0;k<4;k++)ev.push({k:'bs',i:lay.i,s:b*16+k*4,d:3.6,v:v,n:[seqn[k]],o:lay});
+     }
+    }else{
+     for(b=0;b<B;b++){
+      for(p=0;p<16;p++){
+       x=bp.charAt((b*16+p)%bp.length);if(x==='.')continue;
+       var nx3=1;while(nx3<16&&bp.charAt((b*16+p+nx3)%bp.length)==='.')nx3++;
+       var rt=fold(ch[b].root,blo),m=rt;
+       if(x==='o')m=rt+12;if(x==='f')m=rt+7;if(x==='t')m=rt+ch[b].ints[1];if(x==='O')m=rt+24;
+       ev.push({k:'bs',i:lay.i,s:b*16+p,d:Math.min(nx3,lay.max||8)*(lay.gate||.9),v:v*(x==='g'?.6:1),n:[m],o:lay});
+      }
+     }
+    }
+   }
+   if(r==='lead'){
+    var pool=[],m2,pc,lo2=lay.lo||64,hi2=lay.hi||84,grid=lay.grid||2,bars=[];
+    for(m2=lo2;m2<=hi2;m2++){pc=((m2-P.root)%12+12)%12;if(P.sc.indexOf(pc)>=0)pool.push(m2)}
+    var idx=Math.floor(pool.length/2),steps=[-2,-1,-1,0,1,1,2,3,-3,-1,1];
+    for(b=0;b<B;b++){
+     if(b>=2&&Math.floor(b/2)%2===1){bars.push(bars[b-2].map(function(n){return{p:n.p,m:n.m,l:n.l}}));continue}
+     var nts=[];
+     if(rnd()>=(lay.rest||0)){
+      for(p=0;p<16;p+=grid){
+       var w=p%8===0?1:p%4===0?.8:p%2===0?.55:.3;
+       if(rnd()<Math.min(1,(lay.dens||.4)*w*2)){
+        var cts=ch[b].ints.map(function(n){return((ch[b].root+n)%12+12)%12});
+        if(p%8===0){
+         var best=idx,bd=99,j;
+         for(j=0;j<pool.length;j++){if(cts.indexOf(pool[j]%12)>=0&&Math.abs(j-idx)<bd){bd=Math.abs(j-idx);best=j}}
+         idx=best;
+        }else idx+=steps[Math.floor(rnd()*steps.length)];
+        idx=Math.max(0,Math.min(pool.length-1,idx));
+        nts.push({p:p,m:pool[idx]});
+       }
+      }
+      if(!nts.length)nts.push({p:0,m:pool[idx]});
+      for(i=0;i<nts.length;i++){var nxp=i<nts.length-1?nts[i+1].p:16;nts[i].l=Math.min(nxp-nts[i].p,lay.max||6)*(lay.gate||.85)}
+     }
+     bars.push(nts);
+    }
+    for(b=0;b<B;b++)bars[b].forEach(function(n){ev.push({k:'ld',i:lay.i,s:b*16+n.p,d:n.l,v:v,n:[n.m],o:lay})});
+   }
+  });
+  ev.sort(function(a,b){return a.s-b.s});
+  P._ev=ev;P._bar=[];for(b=0;b<B;b++)P._bar.push([]);
+  ev.forEach(function(e){var bb=Math.floor(e.s/16);if(bb<B)P._bar[bb].push(e)});
+  return ev;
+ }
+
+ /* ---------- 音の部品 ---------- */
+ function ctxGet(){if(!AC){var C=window.AudioContext||window.webkitAudioContext;AC=new C()}return AC}
+ function nbuf(c){
+  if(NB.c===c)return NB;
+  var n=c.sampleRate*2,b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0),i,r=mul(5);
+  for(i=0;i<n;i++)d[i]=r()*2-1;
+  var vb=c.createBuffer(1,c.sampleRate*4,c.sampleRate),vd=vb.getChannelData(0),rr=mul(9),j;
+  for(i=0;i<vd.length;i++)vd[i]=(rr()*2-1)*.012;
+  for(j=0;j<26;j++){var pos=Math.floor(rr()*(vd.length-400)),a=.2+rr()*.5,len=20+Math.floor(rr()*160);for(i=0;i<len;i++)vd[pos+i]+=(rr()*2-1)*a*Math.exp(-i/(len*.3))}
+  NB={c:c,n:b,v:vb};return NB;
+ }
+ function ir(c,len){
+  var n=Math.floor(c.sampleRate*len),b=c.createBuffer(2,n,c.sampleRate),ch,i,y,a,r=mul(21);
+  for(ch=0;ch<2;ch++){var d=b.getChannelData(ch);y=0;for(i=0;i<n;i++){a=.65-.45*(i/n);y+=a*((r()*2-1)-y);d[i]=y*Math.pow(1-i/n,2.6)*2.2}}
+  return b;
+ }
+ function mk(c,dest,P){
+  var R={c:c},rv=P.rev||{};nbuf(c);
+  R.master=c.createGain();R.master.gain.value=(P.gain==null?.8:P.gain)*volume;
+  R.comp=c.createDynamicsCompressor();R.comp.threshold.value=-16;R.comp.knee.value=14;R.comp.ratio.value=4;R.comp.attack.value=.008;R.comp.release.value=.2;
+  R.lpf=c.createBiquadFilter();R.lpf.type='lowpass';R.lpf.frequency.value=P.lp||16000;R.lpf.Q.value=.5;
+  R.bus=c.createGain();R.pump=c.createGain();R.drum=c.createGain();
+  R.pump.connect(R.bus);R.drum.connect(R.bus);R.bus.connect(R.lpf);
+  R.rvIn=c.createGain();var cv=c.createConvolver();cv.buffer=ir(c,rv.len||2);R.rvIn.connect(cv);
+  R.rvOut=c.createGain();R.rvOut.gain.value=rv.mix==null?.25:rv.mix;cv.connect(R.rvOut);R.rvOut.connect(R.lpf);
+  R.lpf.connect(R.comp);R.comp.connect(R.master);
+  if(dest===c.destination&&c.createAnalyser&&!c.startRendering){R.an=c.createAnalyser();R.an.fftSize=512;R.an.smoothingTimeConstant=.78;R.master.connect(R.an);R.an.connect(dest)}
+  else R.master.connect(dest);
+  R.src=[];
+  return R;
+ }
+ function osc(R,type,f,t,te,det){var o=R.c.createOscillator();o.type=type;o.frequency.setValueAtTime(f,t);if(det)o.detune.value=det;o.start(t);o.stop(te+.05);return o}
+ function gn(R,v){var g=R.c.createGain();g.gain.value=v==null?1:v;return g}
+ function adsr(g,t,pk,a,d,s,dur,r){
+  var gp=g.gain;gp.setValueAtTime(.0001,t);gp.linearRampToValueAtTime(pk,t+a);
+  var sl=Math.max(pk*s,.0002);gp.exponentialRampToValueAtTime(sl,t+a+d);
+  var te=t+Math.max(dur,a+d);gp.setValueAtTime(sl,te);gp.exponentialRampToValueAtTime(.0001,te+r);return te+r;
+ }
+ function snd(R,g,dest,amt){g.connect(dest);if(amt>0){var s=R.c.createGain();s.gain.value=amt;g.connect(s);s.connect(R.rvIn)}}
+ function lpf(R,f,q,type){var b=R.c.createBiquadFilter();b.type=type||'lowpass';b.frequency.value=f;b.Q.value=q||.7;return b}
+ function noise(R,t,te,off){var s=R.c.createBufferSource();s.buffer=NB.n;if(te-t>1.8)s.loop=true;s.start(t,off==null?Math.random()*1.5:off);s.stop(te+.02);return s}
+ var CURVE=null;
+ function sat(R,k){var s=R.c.createWaveShaper(),n=1024,cu=new Float32Array(n),i,x;for(i=0;i<n;i++){x=i/(n/2)-1;cu[i]=Math.tanh(x*k)}s.curve=cu;return s}
+
+ var DR={
+  kick:function(R,t,v,st){var s=st.ks||'punch',o=R.c.createOscillator(),g=gn(R,0),f0=s==='808'?65:s==='punch'?165:s==='soft'?120:140,f1=s==='808'?40:48,L=s==='808'?.8:s==='soft'?.3:.34;
+   o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+(s==='808'?.22:.1));
+   g.gain.setValueAtTime(v*.95,t);g.gain.exponentialRampToValueAtTime(.001,t+L);o.connect(g);g.connect(R.drum);o.start(t);o.stop(t+L+.05);
+   if(s==='punch'){var n=noise(R,t,t+.02),ng=gn(R,v*.25),hp=lpf(R,2500,.7,'highpass');ng.gain.setValueAtTime(v*.25,t);ng.gain.exponentialRampToValueAtTime(.001,t+.02);n.connect(hp);hp.connect(ng);ng.connect(R.drum)}},
+  snare:function(R,t,v,st){var s=st.ss||'full',L=s==='rim'?.07:s==='gate'?.22:.2,n=noise(R,t,t+L),bp=lpf(R,s==='rim'?3200:1900,.8,'bandpass'),g=gn(R,0);
+   g.gain.setValueAtTime(v*(s==='rim'?.7:.55),t);g.gain.exponentialRampToValueAtTime(.001,t+L);n.connect(bp);bp.connect(g);g.connect(R.drum);
+   var o=osc(R,'triangle',s==='rim'?330:190,t,t+.12),og=gn(R,0);og.gain.setValueAtTime(v*.38,t);og.gain.exponentialRampToValueAtTime(.001,t+.1);o.connect(og);og.connect(R.drum);
+   if(s==='gate'){var s2=gn(R,.4);g.connect(s2);s2.connect(R.rvIn)}},
+  rim:function(R,t,v){var o=osc(R,'square',820,t,t+.04),g=gn(R,0),hp=lpf(R,600,.7,'highpass');g.gain.setValueAtTime(v*.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.035);o.connect(hp);hp.connect(g);g.connect(R.drum)},
+  hat:function(R,t,v,st){var n=noise(R,t,t+.06),hp=lpf(R,7800,.8,'highpass'),g=gn(R,0);g.gain.setValueAtTime(v*.22,t);g.gain.exponentialRampToValueAtTime(.001,t+(st.hl||.045));n.connect(hp);hp.connect(g);g.connect(R.drum)},
+  oh:function(R,t,v){var n=noise(R,t,t+.3),hp=lpf(R,7000,.8,'highpass'),g=gn(R,0);g.gain.setValueAtTime(v*.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);n.connect(hp);hp.connect(g);g.connect(R.drum)},
+  shaker:function(R,t,v){var n=noise(R,t,t+.08),bp=lpf(R,6500,1,'bandpass'),g=gn(R,0);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v*.2,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.08);n.connect(bp);bp.connect(g);g.connect(R.drum)},
+  clap:function(R,t,v){var k,n,bp,g;for(k=0;k<3;k++){var tt=t+k*.011;n=noise(R,tt,tt+.15);bp=lpf(R,1500,.9,'bandpass');g=gn(R,0);g.gain.setValueAtTime(v*.4,tt);g.gain.exponentialRampToValueAtTime(.001,tt+(k===2?.14:.02));n.connect(bp);bp.connect(g);g.connect(R.drum);if(k===2){var s=gn(R,.3);g.connect(s);s.connect(R.rvIn)}}},
+  tom:function(R,t,v,st){var f=st.tf||110,o=R.c.createOscillator(),g=gn(R,0);o.frequency.setValueAtTime(f*1.6,t);o.frequency.exponentialRampToValueAtTime(f*.62,t+.28);g.gain.setValueAtTime(v*.95,t);g.gain.exponentialRampToValueAtTime(.001,t+.55);o.connect(g);g.connect(R.drum);o.start(t);o.stop(t+.6);
+   var n=noise(R,t,t+.05),nl=lpf(R,900,.7),ng=gn(R,v*.3);ng.gain.setValueAtTime(v*.3,t);ng.gain.exponentialRampToValueAtTime(.001,t+.05);n.connect(nl);nl.connect(ng);ng.connect(R.drum);var s=gn(R,.35);g.connect(s);s.connect(R.rvIn)},
+  boom:function(R,t,v){var o=R.c.createOscillator(),g=gn(R,0);o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(32,t+1.2);g.gain.setValueAtTime(v*1.0,t);g.gain.exponentialRampToValueAtTime(.001,t+2.4);o.connect(g);g.connect(R.drum);o.start(t);o.stop(t+2.5);
+   var n=noise(R,t,t+.7),nl=lpf(R,2600,.7),ng=gn(R,0);nl.frequency.setValueAtTime(2600,t);nl.frequency.exponentialRampToValueAtTime(160,t+.6);ng.gain.setValueAtTime(v*.5,t);ng.gain.exponentialRampToValueAtTime(.001,t+.7);n.connect(nl);nl.connect(ng);ng.connect(R.drum);var s=gn(R,.7);ng.connect(s);s.connect(R.rvIn)}
+ };
+
+ var V={
+  rhodes:function(R,D,t,d,m,v){var f=mtof(m)*(1+(Math.random()-.5)*.006),car=osc(R,'sine',f,t,t+d+1.2),mod=osc(R,'sine',f,t,t+d+1.2),mg=gn(R,0),g=gn(R,0);
+   mg.gain.setValueAtTime(f*1.3,t);mg.gain.exponentialRampToValueAtTime(f*.1,t+.5);mod.connect(mg);mg.connect(car.frequency);car.connect(g);adsr(g,t,v*.5,.005,.9,.25,d,.35);snd(R,g,D,.25)},
+  piano:function(R,D,t,d,m,v){var f=mtof(m),o=osc(R,'triangle',f,t,t+d+1.6),o2=osc(R,'sine',f*2,t,t+d+1.6),g2=gn(R,.3),lp=lpf(R,Math.min(9000,f*8),.7),g=gn(R,0);
+   lp.frequency.setValueAtTime(Math.min(9000,f*8),t);lp.frequency.exponentialRampToValueAtTime(Math.max(300,f*2),t+.9);o.connect(lp);o2.connect(g2);g2.connect(lp);lp.connect(g);adsr(g,t,v*.55,.003,1.5,.06,d,.4);snd(R,g,D,.3)},
+  pluck:function(R,D,t,d,m,v){var f=mtof(m),o=osc(R,'sawtooth',f,t,t+.7),lp=lpf(R,4000,2),g=gn(R,0);lp.frequency.setValueAtTime(Math.min(8000,f*10),t);lp.frequency.exponentialRampToValueAtTime(Math.max(250,f*1.4),t+.3);o.connect(lp);lp.connect(g);adsr(g,t,v*.38,.002,.4,.03,.05,.2);snd(R,g,D,.25)},
+  guitar:function(R,D,t,d,m,v){var f=mtof(m),o=osc(R,'triangle',f,t,t+1.4),o2=osc(R,'sawtooth',f,t,t+1.4),g2=gn(R,.35),lp=lpf(R,3200,1),g=gn(R,0);
+   lp.frequency.setValueAtTime(3200,t);lp.frequency.exponentialRampToValueAtTime(650,t+.5);o.connect(lp);o2.connect(g2);g2.connect(lp);lp.connect(g);adsr(g,t,v*.5,.003,1.1,.08,d*.6,.3);snd(R,g,D,.2)},
+  koto:function(R,D,t,d,m,v){var f=mtof(m),o=osc(R,'triangle',f,t,t+1.2),o2=osc(R,'sawtooth',f,t,t+1.2),o3=osc(R,'sine',f*2,t,t+1.2),g2=gn(R,.28),g3=gn(R,.25),lp=lpf(R,5000,3),g=gn(R,0);
+   o.frequency.setValueAtTime(f*1.025,t);o.frequency.exponentialRampToValueAtTime(f,t+.05);lp.frequency.setValueAtTime(5000,t);lp.frequency.exponentialRampToValueAtTime(900,t+.4);
+   o.connect(lp);o2.connect(g2);g2.connect(lp);o3.connect(g3);g3.connect(lp);lp.connect(g);adsr(g,t,v*.55,.001,.9,.03,.05,.3);snd(R,g,D,.35)},
+  bell:function(R,D,t,d,m,v){var f=mtof(m),g=gn(R,1),R_=[1,2.756,5.404,8.93],G=[1,.5,.25,.12],T=[2.6,1.6,.9,.45],k;
+   for(k=0;k<4;k++){var o=osc(R,'sine',f*R_[k],t,t+T[k]),eg=gn(R,0);eg.gain.setValueAtTime(.0001,t);eg.gain.linearRampToValueAtTime(v*.22*G[k],t+.003);eg.gain.exponentialRampToValueAtTime(.0001,t+T[k]);o.connect(eg);eg.connect(g)}
+   snd(R,g,D,.6)},
+  sq:function(R,D,t,d,m,v,o){var f=mtof(m),os=osc(R,'square',f,t,t+d+.1),g=gn(R,0);os.connect(g);adsr(g,t,v*.22,.003,.08,.55,d,.04);snd(R,g,D,.05)},
+  saw:function(R,D,t,d,m,v){var f=mtof(m),g=gn(R,0),lp=lpf(R,4200,1),k;lp.frequency.setValueAtTime(900,t);lp.frequency.exponentialRampToValueAtTime(4200,t+.12);
+   [-14,0,14].forEach(function(dt){var o=osc(R,'sawtooth',f,t,t+d+.4,dt);o.connect(lp)});lp.connect(g);adsr(g,t,v*.16,.01,.15,.6,d,.2);snd(R,g,D,.25)},
+  sine:function(R,D,t,d,m,v,o){var f=mtof(m),os=osc(R,'sine',f,t,t+d+.5),o2=osc(R,'triangle',f,t,t+d+.5),g2=gn(R,.25),g=gn(R,0),lf=osc(R,'sine',5.2,t,t+d+.5),lg=gn(R,0);
+   lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*.006*(o.vib==null?1:o.vib),t+.35);lf.connect(lg);lg.connect(os.frequency);os.connect(g);o2.connect(g2);g2.connect(g);adsr(g,t,v*.4,.03,.12,.7,d,.3);snd(R,g,D,.4)},
+  strs:function(R,D,t,d,m,v,o){var f=mtof(m),g=gn(R,0),lp=lpf(R,o.cut||2200,.6);[-9,0,9].forEach(function(dt){osc(R,'sawtooth',f,t,t+d+.3,dt).connect(lp)});lp.connect(g);adsr(g,t,v*.22,o.a||.015,.1,.7,d,o.r2||.08);snd(R,g,D,.25)},
+  brass:function(R,D,t,d,m,v,o){var f=mtof(m),g=gn(R,0),lp=lpf(R,2800,1);lp.frequency.setValueAtTime(450,t);lp.frequency.exponentialRampToValueAtTime(o.cut||2800,t+(o.a||.1)+.12);
+   [-7,0,7].forEach(function(dt){osc(R,'sawtooth',f,t,t+d+.6,dt).connect(lp)});lp.connect(g);adsr(g,t,v*.2,o.a||.05,.2,.75,d,o.r2||.25);snd(R,g,D,.35)},
+  pad:function(R,D,t,d,notes,v,o){var g=gn(R,0),lp=lpf(R,o.cut||1400,.5),n=notes.length;
+   notes.forEach(function(m){var f=mtof(m);osc(R,'sawtooth',f,t,t+d+2,-7).connect(lp);osc(R,'sawtooth',f,t,t+d+2,7).connect(lp);if(o.sub!==0){var s=osc(R,'sine',f,t,t+d+2),sg=gn(R,.5);s.connect(sg);sg.connect(lp)}});
+   lp.connect(g);adsr(g,t,v*.26/Math.sqrt(n),o.a||.5,.4,.85,d,o.r2||.9);snd(R,g,D,.45)},
+  drone:function(R,D,t,d,notes,v,o){var g=gn(R,0),lp=lpf(R,320,2),lf=osc(R,'sine',.12,t,t+d+3),lg=gn(R,160);lf.connect(lg);lg.connect(lp.frequency);
+   notes.forEach(function(m){var f=mtof(m-12);osc(R,'sawtooth',f,t,t+d+3).connect(lp);osc(R,'sine',f*1.006,t,t+d+3).connect(lp)});lp.connect(g);adsr(g,t,v*.3,2.5,1,.9,d,2.5);snd(R,g,D,.6)},
+  dist:function(R,D,t,d,m,v){var f=mtof(m),g=gn(R,0),sh=sat(R,7),lp=lpf(R,3300,.8);[-6,6].forEach(function(dt){osc(R,'sawtooth',f,t,t+d+.2,dt).connect(sh)});sh.connect(lp);lp.connect(g);adsr(g,t,v*.2,.004,.18,.8,d,.05);snd(R,g,D,.12)},
+  bsine:function(R,D,t,d,m,v){var f=mtof(m),o=osc(R,'sine',f,t,t+d+.2),o2=osc(R,'sine',f*2,t,t+d+.2),g2=gn(R,.22),g=gn(R,0);o.connect(g);o2.connect(g2);g2.connect(g);adsr(g,t,v*.7,.012,.12,.8,d,.1);snd(R,g,D,0)},
+  bsaw:function(R,D,t,d,m,v,o){var f=mtof(m),os=osc(R,'sawtooth',f,t,t+d+.2),lp=lpf(R,o.cut||700,2.5),g=gn(R,0);lp.frequency.setValueAtTime((o.cut||700)*2.6,t);lp.frequency.exponentialRampToValueAtTime(o.cut||700,t+.14);os.connect(lp);lp.connect(g);adsr(g,t,v*.55,.005,.1,.8,d,.06);snd(R,g,D,0)},
+  bsq:function(R,D,t,d,m,v){var f=mtof(m),os=osc(R,'square',f,t,t+d+.1),lp=lpf(R,900,1),g=gn(R,0);os.connect(lp);lp.connect(g);adsr(g,t,v*.4,.004,.06,.8,d,.03);snd(R,g,D,0)},
+  b808:function(R,D,t,d,m,v){var f=mtof(m),o=R.c.createOscillator(),sh=sat(R,2.2),g=gn(R,0),L=Math.max(d,.5)*1.1;o.frequency.setValueAtTime(f*1.9,t);o.frequency.exponentialRampToValueAtTime(f,t+.06);o.start(t);o.stop(t+L+.1);
+   o.connect(sh);sh.connect(g);g.gain.setValueAtTime(v*.8,t);g.gain.setValueAtTime(v*.8,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+L);g.connect(D)}
+ };
+ var VMAP={sine_b:'bsine'};
+ function pickV(k,i){if(k==='bs'){return{sine:'bsine',saw:'bsaw',sq:'bsq','808':'b808'}[i]}if(k==='ps')return i==='pad'||!i?'pad':i==='drone'?'drone':i==='str'?'pad':i;return i}
+
+ function fire(R,P,e,t,sd){
+  var d=Math.max(.04,e.d*sd),o=e.o||{},nm;
+  if(e.k==='dr'){DR[e.i](R,t,e.v,e.st);if(P.pump&&e.i==='kick'){var g=R.pump.gain;g.cancelScheduledValues(t);g.setValueAtTime(1,t);g.linearRampToValueAtTime(1-P.pump,t+.012);g.linearRampToValueAtTime(1,t+.27)}return}
+  var D=e.k==='ld'?R.bus:R.pump;
+  if(e.k==='ps'){var kind=e.i==='str'?'pad':e.i;if(kind==='brass'){e.n.forEach(function(m){V.brass(R,D,t,d,m,e.v/Math.sqrt(e.n.length)*1.2,o)});return}V[pickV('ps',e.i)](R,D,t,d,e.n,e.v,o);return}
+  nm=pickV(e.k,e.i);
+  var n=e.n.length,k,st=(o.strum||0);
+  for(k=0;k<n;k++)V[nm](R,D,t+k*st,d,e.n[k],e.v/(n>1?Math.sqrt(n)*.85:1),o);
+ }
+ function sched(R,P,bar,t0){
+  var sd=60/P.bpm/4,b=bar%P.bars,list=P._bar[b],i,e,s,t;
+  for(i=0;i<list.length;i++){
+   e=list[i];s=e.s-b*16;
+   t=t0+(s+((s%1===0&&s%2===1&&P.sw)?P.sw:0)+((s%1===0&&s%4===2&&P.sw8)?P.sw8:0))*sd;
+   if(P.hum)t+=(Math.random()-.5)*.012;
+   fire(R,P,e,t,sd);
+  }
+ }
+ function bed(R,P,t){
+  var fx=P.fx;if(!fx||!fx.n)return;
+  var s=R.c.createBufferSource(),g=gn(R,fx.v||.3),f;
+  if(fx.n==='vinyl'){s.buffer=NB.v;f=lpf(R,6500,.5)}
+  else if(fx.n==='rain'){s.buffer=NB.n;f=lpf(R,7500,.5);var hp=lpf(R,900,.5,'highpass');s.connect(hp);hp.connect(f);g.gain.value=(fx.v||.3)*.28}
+  else{s.buffer=NB.n;f=lpf(R,520,.8,'bandpass');var lf=R.c.createOscillator(),lg=gn(R,260);lf.frequency.value=.13;lf.connect(lg);lg.connect(f.frequency);lf.start(t);g.gain.value=(fx.v||.3)*.9;R.src.push(lf)}
+  s.loop=true;if(fx.n!=='rain')s.connect(f);f.connect(g);g.connect(R.bus);s.start(t);R.src.push(s);
+ }
+
+ /* ---------- 再生の制御 ---------- */
+ function start(P){
+  var c=ctxGet();if(c.state==='suspended')c.resume();
+  sfxStop();stop(true);plan(P);
+  var R=mk(c,c.destination,P),sd=60/P.bpm/4,bl=sd*16,st={R:R,P:P,t0:c.currentTime+.1,bar:0,sd:sd,kind:'m'};
+  R.master.gain.setValueAtTime(0,c.currentTime);R.master.gain.linearRampToValueAtTime((P.gain==null?.8:P.gain)*volume,c.currentTime+.05);
+  bed(R,P,st.t0);
+  st.next=st.t0;
+  function tick(){while(st.next<c.currentTime+.4){sched(R,P,st.bar,st.next);st.bar++;st.next+=bl}}
+  tick();st.iv=setInterval(tick,50);
+  cur=st;return st;
+ }
+ function stop(quick){
+  if(!cur)return;var st=cur,c=AC;cur=null;clearInterval(st.iv);
+  try{var g=st.R.master.gain;g.cancelScheduledValues(c.currentTime);g.setValueAtTime(g.value,c.currentTime);g.linearRampToValueAtTime(0,c.currentTime+(quick?.04:.15))}catch(e){}
+  st.R.src.forEach(function(s){try{s.stop(c.currentTime+.2)}catch(e){}});
+  setTimeout(function(){try{st.R.master.disconnect();if(st.R.an)st.R.an.disconnect()}catch(e){}},300);
+  if(st.onend)st.onend();
+ }
+ function pos(){
+  if(!cur||cur.kind!=='m')return null;
+  var c=AC,x=(c.currentTime-cur.t0)/cur.sd;if(x<0)x=0;var L=cur.P.bars*16;return{step:x%L,bar:Math.floor((x%L)/16)};
+ }
+ function render(P,bars,sr){
+  plan(P);sr=sr||22050;var sd=60/P.bpm/4,bl=sd*16,dur=bars*bl+2,oc=new OfflineAudioContext(2,Math.floor(sr*dur),sr),R=mk(oc,oc.destination,P),b;
+  bed(R,P,0);for(b=0;b<bars;b++)sched(R,P,b,.1+b*bl);return oc.startRendering();
+ }
+
+ /* ---------- 効果音 ---------- */
+ function env(g,t,pts){g.gain.setValueAtTime(.0001,t);pts.forEach(function(p){g.gain.linearRampToValueAtTime(Math.max(.0001,p[1]),t+p[0])})}
+ function nz(R,t,dur){return noise(R,t,t+dur)}
+ var SF={
+  whoosh:function(R,t){var n=nz(R,t,1.4),bp=lpf(R,300,1.6,'bandpass'),g=gn(R,0),pn=R.c.createStereoPanner();bp.frequency.setValueAtTime(260,t);bp.frequency.exponentialRampToValueAtTime(4800,t+.55);bp.frequency.exponentialRampToValueAtTime(700,t+1.2);
+   env(g,t,[[.45,.9],[1.2,.0001]]);pn.pan.setValueAtTime(-.8,t);pn.pan.linearRampToValueAtTime(.8,t+1.2);n.connect(bp);bp.connect(g);g.connect(pn);pn.connect(R.drum);var s=gn(R,.3);g.connect(s);s.connect(R.rvIn);return 1.5},
+  impact:function(R,t){DR.boom(R,t,1);var o=osc(R,'sine',110,t,t+.3),g=gn(R,0);o.frequency.exponentialRampToValueAtTime(40,t+.25);g.gain.setValueAtTime(.7,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g);g.connect(R.drum);return 3},
+  riser:function(R,t){var n=nz(R,t,3.2),bp=lpf(R,400,2,'bandpass'),g=gn(R,0);bp.frequency.setValueAtTime(350,t);bp.frequency.exponentialRampToValueAtTime(9000,t+3);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.8,t+3);g.gain.setValueAtTime(.0001,t+3.02);n.connect(bp);bp.connect(g);g.connect(R.drum);
+   var o=osc(R,'sawtooth',180,t,t+3.1),lp=lpf(R,1800,.8),og=gn(R,0);o.frequency.exponentialRampToValueAtTime(1500,t+3);og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.2,t+3);og.gain.setValueAtTime(.0001,t+3.02);o.connect(lp);lp.connect(og);og.connect(R.drum);var s=gn(R,.3);og.connect(s);s.connect(R.rvIn);
+   DR.boom(R,t+3.02,.8);return 5.5},
+  click:function(R,t){[0,.6].forEach(function(dt,i){var tt=t+dt,o=osc(R,'triangle',i?1500:1100,tt,tt+.2),g=gn(R,0);o.frequency.exponentialRampToValueAtTime(i?2200:700,tt+.05);g.gain.setValueAtTime(.8,tt);g.gain.exponentialRampToValueAtTime(.001,tt+.06);o.connect(g);g.connect(R.drum)});return 1},
+  chime:function(R,t){[84,88,91,96].forEach(function(m,i){V.bell(R,R.drum,t+i*.09,1,m,1.4)});return 2.2},
+  laser:function(R,t){[0,.24,.48].forEach(function(dt,i){var tt=t+dt,o=osc(R,'sawtooth',2400-i*500,tt,tt+.3),bp=lpf(R,1800,3,'bandpass'),g=gn(R,0);o.frequency.exponentialRampToValueAtTime(140,tt+.22);g.gain.setValueAtTime(.9,tt);g.gain.exponentialRampToValueAtTime(.001,tt+.24);o.connect(bp);bp.connect(g);g.connect(R.drum);var s=gn(R,.3);g.connect(s);s.connect(R.rvIn)});return 1.3},
+  glitch:function(R,t){var r=mul(3),i,tt=t;for(i=0;i<14;i++){var L=.025+r()*.05,type=r()<.5?'square':'sawtooth',o=osc(R,type,200+Math.floor(r()*10)*180,tt,tt+L),g=gn(R,.22);g.gain.setValueAtTime(.2,tt);g.gain.setValueAtTime(.0001,tt+L);o.connect(g);g.connect(R.drum);
+    if(r()<.4){var n=nz(R,tt,L),hp=lpf(R,3000,.7,'highpass'),ng=gn(R,.2);ng.gain.setValueAtTime(.22,tt);ng.gain.setValueAtTime(.0001,tt+L);n.connect(hp);hp.connect(ng);ng.connect(R.drum)}
+    tt+=L+(r()<.3?.06:.012)}return 1.3},
+  rain:function(R,t){var n=nz(R,t,6),hp=lpf(R,1000,.5,'highpass'),lp=lpf(R,8000,.5),g=gn(R,0);env(g,t,[[.8,.5],[5.2,.5],[6,.0001]]);n.connect(hp);hp.connect(lp);lp.connect(g);g.connect(R.drum);
+   var r=mul(17),i;for(i=0;i<46;i++){var tt=t+r()*5.6,o=osc(R,'sine',1800+r()*2600,tt,tt+.08),og=gn(R,0);og.gain.setValueAtTime(.0001,tt);og.gain.linearRampToValueAtTime(.03+r()*.04,tt+.004);og.gain.exponentialRampToValueAtTime(.0001,tt+.07);o.connect(og);og.connect(R.drum);var s=gn(R,.4);og.connect(s);s.connect(R.rvIn)}return 6.2},
+  heart:function(R,t){var i;for(i=0;i<6;i++){[0,.28].forEach(function(dt,j){var tt=t+i*.86+dt,o=osc(R,'sine',j?58:68,tt,tt+.2),g=gn(R,0);o.frequency.exponentialRampToValueAtTime(34,tt+.14);g.gain.setValueAtTime(.0001,tt);g.gain.linearRampToValueAtTime(j?.65:.95,tt+.012);g.gain.exponentialRampToValueAtTime(.001,tt+.17);o.connect(g);g.connect(R.drum);var s=gn(R,.25);g.connect(s);s.connect(R.rvIn)})}return 5.6}
+ };
+ var sfxCur=null;
+ function sfx(id){
+  var c=ctxGet();if(c.state==='suspended')c.resume();stop(true);if(sfxCur)sfxStop();
+  var P={gain:.85,rev:{len:2.6,mix:.35},lp:16000},R=mk(c,c.destination,P),dur=SF[id](R,c.currentTime+.08);
+  var st={R:R,P:P,kind:'s',t0:c.currentTime+.08,dur:dur};
+  sfxCur=st;st.to=setTimeout(function(){if(sfxCur===st){sfxCur=null;if(st.onend)st.onend()}},dur*1000+300);return st;
+ }
+ function sfxStop(){var st=sfxCur;if(!st)return;sfxCur=null;clearTimeout(st.to);try{var g=st.R.master.gain;g.cancelScheduledValues(AC.currentTime);g.setValueAtTime(g.value,AC.currentTime);g.linearRampToValueAtTime(0,AC.currentTime+.05)}catch(e){}setTimeout(function(){try{st.R.master.disconnect();st.R.an.disconnect()}catch(e){}},200);if(st.onend)st.onend()}
+ function renderSfx(id,sr){sr=sr||22050;var oc=new OfflineAudioContext(2,sr*7,sr),R=mk(oc,oc.destination,{gain:.85,rev:{len:2.6,mix:.35}});nbuf(oc);SF[id](R,.05);return oc.startRendering()}
+ function active(){return cur||sfxCur}
+ function setVol(v){volume=v;var st=active();if(st)try{st.R.master.gain.setTargetAtTime((st.P.gain==null?.8:st.P.gain)*v,AC.currentTime,.03)}catch(e){}}
+ function stopAll(){stop();sfxStop()}
+ function analyser(){var st=active();return st&&st.R.an?st.R.an:null}
+ function now(){return AC?AC.currentTime:0}
+ return{now:now,plan:plan,start:start,stop:stopAll,pos:pos,render:render,renderSfx:renderSfx,sfx:sfx,setVol:setVol,analyser:analyser,active:active,SFX:SF,chords:function(P){plan(P);return P._ch}};
+})();
+var CATS=[
+ {id:'genre',name:'ジャンル',en:'Genre',lead:'曲のスタイルそのものの呼び名。テンポ、楽器、リズムの組み合わせで決まります。'},
+ {id:'mood',name:'ムード',en:'Mood',lead:'曲が持つ感情や空気の呼び名。ジャンルに重ねて使うと、狙いが伝わりやすくなります。'},
+ {id:'sfx',name:'効果音',en:'Sound effects',lead:'場面の切り替えや強調に使う短い音。名前と音の形をセットで覚えられます。'}
+];
+var MIN=[0,2,3,5,7,8,10],MAJ=[0,2,4,5,7,9,11],MINP=[0,3,5,7,10],MAJP=[0,2,4,7,9],PHR=[0,1,3,5,7,8,10],LYD=[0,2,4,6,7,9,11],HIR=[0,2,3,7,8];
+var TERMS=[
+{id:'lofi',cat:'genre',ja:'ローファイ',en:'Lo-fi',h:28,alias:['ローファイヒップホップ','チル','作業用','lofi'],
+ desc:'わざと粗く仕上げた、ゆったりしたヒップホップ。エレピの和音と、レコードのパチパチ音が特徴。',
+ feel:['まったり','懐かしい','夜'],use:'作業用、勉強用、夜のVlog、雨の日の動画。',
+ ps:'lo-fi hip hop, chill, mellow rhodes, dusty vinyl crackle, soft boom-bap drums, warm tape saturation',
+ m:{b:46,e:22,s:30},
+ p:{bpm:76,sw:.2,hum:1,root:57,sc:MIN,bars:4,seed:4,prog:[[0,'m9'],[5,'m9'],[10,'9'],[3,'maj9']],
+  dr:{k:'x.......x.x.....',s:'....x.......x...',h:'x.x.x.x.x.x.x.xx',hv:.55,ks:'soft',ss:'rim'},
+  lay:[{r:'pad',i:'pad',v:.3,cut:900,lo:52,hi:72},{r:'chord',i:'rhodes',pat:'x.....o...x.....',v:.6,lo:55,hi:76,strum:.014,max:6},{r:'bass',i:'sine',pat:'x.....f.x.......',lo:33,v:.8},{r:'lead',i:'rhodes',dens:.2,lo:69,hi:86,v:.45,rest:.3,grid:2,max:8}],
+  fx:{n:'vinyl',v:.3},rev:{len:1.8,mix:.2},lp:5200,gain:.9}},
+{id:'cinematic',cat:'genre',ja:'シネマティック',en:'Cinematic',h:250,alias:['映画風','映画音楽','サウンドトラック','スコア'],
+ desc:'映画のサウンドトラックのような曲調。弦楽器とゆっくり膨らむ和音が、場面を大きく見せる。',
+ feel:['壮大','重厚','物語性'],use:'映画風の予告、オープニング、ドキュメンタリー、ブランド動画。',
+ ps:'cinematic score, slow building strings, deep brass swells, sparse piano, huge reverb, emotional film soundtrack',
+ m:{b:30,e:60,s:88},
+ p:{bpm:68,root:50,sc:MIN,bars:4,seed:8,prog:[[0,'min'],[8,'maj'],[3,'maj'],[10,'maj']],
+  dr:{b:'x'+'.'.repeat(31),t:'.'.repeat(48)+'x...x...x.x.x...',tf:70},
+  lay:[{r:'pad',i:'str',v:.65,cut:1700,a:.9,r2:1.2,lo:48,hi:72},{r:'pad',i:'brass',hold:2,v:.4,a:.8,cut:1800,lo:43,hi:62},{r:'chord',i:'piano',mode:'arp',rate:4,seq:[0,1,2,3,2,1],gate:3,v:.5,lo:50,hi:74},{r:'bass',i:'sine',pat:'x',lo:33,v:.7,max:16},{r:'lead',i:'sine',dens:.12,lo:62,hi:79,v:.4,grid:4,max:12,gate:.9,rest:.2}],
+  rev:{len:4.5,mix:.5},lp:9500,gain:.9}},
+{id:'ambient',cat:'genre',ja:'アンビエント',en:'Ambient',h:195,alias:['環境音楽','ドローン','癒し','ヒーリング'],
+ desc:'リズムをほとんど使わず、長い和音と空気感で満たす音楽。曲というより、空間そのもの。',
+ feel:['静か','広がる','瞑想的'],use:'瞑想、睡眠、ヨガ、背景に溶け込ませたい映像。',
+ ps:'ambient, ethereal pads, slow evolving drones, soft bell tones, spacious reverb, no drums, meditative',
+ m:{b:56,e:6,s:96},
+ p:{bpm:60,root:48,sc:MAJP,bars:4,seed:2,prog:[[0,'maj9'],[5,'maj7'],[9,'m9'],[7,'sus4']],
+  lay:[{r:'pad',i:'pad',v:.7,cut:1100,a:2.2,r2:2.5,lo:48,hi:72},{r:'pad',i:'drone',hold:4,v:.3,lo:36,hi:55},{r:'lead',i:'bell',dens:.08,lo:72,hi:91,v:.5,rest:.3,grid:4,max:16}],
+  fx:{n:'wind',v:.1},rev:{len:6,mix:.7},lp:10000,gain:1.2}},
+{id:'epic',cat:'genre',ja:'エピック',en:'Epic trailer',h:12,alias:['壮大','トレーラー','映画予告','ハリウッド'],
+ desc:'予告編のような、力で押す大編成の曲。低音の太鼓、刻む弦、金管が一気に盛り上げる。',
+ feel:['迫力','高揚','勝利'],use:'ゲームのPV、スポーツ、ヒーローの登場、プロモーション動画の山場。',
+ ps:'epic trailer music, driving staccato strings, powerful brass, massive taiko drums, heroic, huge cinematic hits',
+ m:{b:30,e:94,s:85},
+ p:{bpm:96,root:48,sc:MIN,bars:4,seed:5,prog:[[0,'min'],[8,'maj'],[3,'maj'],[10,'maj']],
+  dr:{k:'x...x...x...x...',t:'..x...x...x...x.',tf:85,s:'....x.......x...',ss:'gate',b:'x'+'.'.repeat(31)},
+  lay:[{r:'chord',i:'strs',mode:'arp',rate:2,seq:[0,0,1,0,0,2,1,0],gate:.65,v:.7,lo:48,hi:62,cut:2600},{r:'chord',i:'brass',pat:'x.....x.x.......',v:.6,lo:55,hi:70,max:3,cut:2600},{r:'pad',i:'str',v:.5,cut:2000,a:.3,lo:48,hi:72},{r:'bass',i:'saw',pat:'x.x.x.x.x.x.x.x.',lo:33,v:.7,max:2,cut:450},{r:'lead',i:'brass',dens:.2,lo:60,hi:79,v:.5,grid:4,max:8,gate:.95,rest:.2}],
+  rev:{len:3,mix:.4},lp:12000,gain:.85}},
+{id:'synthwave',cat:'genre',ja:'シンセウェーブ',en:'Synthwave',h:310,alias:['レトロウェーブ','アウトラン','80年代','ネオン'],
+ desc:'80年代の映画やゲームを思わせる、シンセ中心の曲。太いベースの刻みと、きらびやかな和音が続く。',
+ feel:['レトロ','ネオン','ドライブ'],use:'夜の街、ドライブ映像、サイバー風の演出、レトロゲーム風の動画。',
+ ps:'synthwave, retro 80s, analog saw synths, pulsing bassline, gated reverb snare, neon night drive',
+ m:{b:52,e:66,s:55},
+ p:{bpm:100,root:57,sc:MIN,bars:4,seed:6,prog:[[0,'min'],[8,'maj'],[3,'maj'],[10,'maj']],fill:1,
+  dr:{k:'x.......x.......',s:'....x.......x...',ss:'gate',h:'x.x.x.x.x.x.x.x.',hv:.5,t:'',fill:1},
+  lay:[{r:'bass',i:'saw',pat:'x.x.x.x.x.x.x.x.',lo:33,v:.7,max:2,cut:650},{r:'pad',i:'pad',v:.5,cut:1800,a:.3,lo:52,hi:76},{r:'chord',i:'saw',mode:'arp',rate:2,seq:[0,1,2,3,2,1,2,1],gate:.8,v:.4,lo:57,hi:76},{r:'lead',i:'saw',dens:.3,lo:69,hi:88,v:.4,max:8,rest:.2}],
+  rev:{len:2.8,mix:.35},lp:12000,gain:.85}},
+{id:'house',cat:'genre',ja:'ハウス',en:'House / EDM',h:330,alias:['EDM','ダンス','クラブ','四つ打ち'],
+ desc:'一定のキックを四つ打ちで刻む、踊るための曲。和音が音量でうねる「ポンピング」が特徴。',
+ feel:['ノリ','高揚','フェス'],use:'ショート動画の盛り上げ、ダンス、スポーツのハイライト、広告。',
+ ps:'house music, four-on-the-floor kick, sidechained pads, bright plucked chords, offbeat hi-hats, energetic dance',
+ m:{b:76,e:82,s:40},
+ p:{bpm:124,root:57,sc:MIN,bars:4,seed:12,pump:.55,prog:[[0,'m7'],[5,'m7'],[8,'maj7'],[10,'7']],
+  dr:{k:'x...x...x...x...',ks:'punch',c:'....x.......x...',o:'..x...x...x...x.',h:'x.x.x.x.x.x.x.x.',hv:.4},
+  lay:[{r:'bass',i:'saw',pat:'.xxx.xxx.xxx.xxx',lo:33,v:.6,max:1,gate:.8,cut:520},{r:'pad',i:'pad',v:.6,cut:2200,a:.1,lo:52,hi:76},{r:'chord',i:'saw',pat:'x..x..x...x..x..',v:.55,lo:57,hi:76,max:2,gate:.8},{r:'lead',i:'saw',dens:.25,lo:72,hi:91,v:.35,max:4,rest:.4}],
+  rev:{len:1.8,mix:.2},lp:14000,gain:.85}},
+{id:'trap',cat:'genre',ja:'トラップ',en:'Trap',h:268,alias:['ヒップホップ','808','ビート'],
+ desc:'地を這う低音の「808」と、細かく刻むハイハットが主役。間の多いビートで、重く暗い。',
+ feel:['重い','クール','街'],use:'ストリート系、ファッション、ゲーム実況、ラップを乗せる前提のビート。',
+ ps:'dark trap beat, booming 808 bass, rapid hi-hat rolls, eerie bell melody, sparse snare, moody',
+ m:{b:24,e:74,s:32},
+ p:{bpm:140,root:54,sc:MIN,bars:4,seed:9,prog:[[0,'min'],[8,'maj'],[3,'maj'],[10,'maj']],
+  dr:{s:'........x.......',ss:'full',c:'........x.......',h:'x.x.x.x.xrx.x.rx',hv:.5,hl:.035},
+  lay:[{r:'bass',i:'808',pat:'x.......x.x.....',lo:30,v:.9,max:8},{r:'chord',i:'bell',mode:'arp',rate:2,seq:[0,1,2,1,3,2,1,0],gate:1,v:.5,lo:66,hi:88},{r:'pad',i:'pad',v:.3,cut:800,lo:48,hi:68}],
+  rev:{len:2,mix:.3},lp:14000,gain:.85}},
+{id:'dnb',cat:'genre',ja:'ドラムンベース',en:'Drum & bass',h:140,alias:['DnB','ドラムンベース','ジャングル','高速ビート'],
+ desc:'速いテンポで細かく割ったドラムと、うねる重低音の組み合わせ。疾走感はジャンル随一。',
+ feel:['疾走','スリル','攻撃的'],use:'カーアクション、ゲームのバトル、スポーツ、スピード感のある映像。',
+ ps:'drum and bass, 174 bpm, fast breakbeat, rolling reese bass, atmospheric pads, high energy',
+ m:{b:46,e:88,s:35},
+ p:{bpm:174,root:52,sc:MIN,bars:4,seed:13,prog:[[0,'m7'],[8,'maj7'],[3,'maj7'],[10,'7']],
+  dr:{k:'x.........x.....',ks:'punch',s:'....x..g....x.g.',ss:'full',h:'x.x.x.x.x.x.x.x.',hv:.5},
+  lay:[{r:'bass',i:'saw',pat:'x.....x...x.....',lo:28,v:.6,max:4,cut:400},{r:'bass',i:'sine',pat:'x.....x...x.....',lo:28,v:.6,max:4},{r:'pad',i:'pad',v:.45,cut:1500,lo:52,hi:76},{r:'chord',i:'rhodes',pat:'x.......o.......',v:.4,lo:55,hi:76},{r:'lead',i:'bell',dens:.2,lo:72,hi:91,v:.4,rest:.3,grid:2,max:8}],
+  rev:{len:1.5,mix:.25},lp:14000,gain:.85}},
+{id:'jazz',cat:'genre',ja:'ジャズ',en:'Jazz',h:42,alias:['スウィング','ジャズピアノ','ラウンジ','カフェ'],
+ desc:'はずむ「スウィング」のリズムに、ピアノとウォーキングベースが重なる。落ち着いた大人の雰囲気。',
+ feel:['おしゃれ','大人','くつろぎ'],use:'カフェ、バー、ホテル、料理動画、落ち着いたナレーションの背景。',
+ ps:'smooth jazz trio, swinging ride cymbal, walking upright bass, warm jazz piano comping, late night club',
+ m:{b:58,e:38,s:22},
+ p:{bpm:128,sw8:.55,hum:1,root:53,sc:MAJ,bars:4,seed:3,prog:[[2,'m7'],[7,'9'],[0,'maj9'],[9,'7']],
+  dr:{k:'o...o...o...o...',ks:'soft',h:'x...x.x.x...x.x.',hv:.7,hl:.09,s:'......g.....g...',ss:'rim'},
+  lay:[{r:'bass',i:'sine',walk:1,lo:33,v:.9},{r:'chord',i:'piano',pat:'x.....o.....x...',v:.6,lo:52,hi:72,max:4,strum:.012},{r:'lead',i:'piano',dens:.35,lo:65,hi:84,v:.5,rest:.15,grid:2,max:4}],
+  rev:{len:1.6,mix:.2},lp:9000,gain:.9}},
+{id:'bossa',cat:'genre',ja:'ボサノバ',en:'Bossa nova',h:70,alias:['ボサノヴァ','ブラジル','ギター'],
+ desc:'ナイロン弦ギターが軽く刻む、ブラジル生まれのやわらかいリズム。ささやくような心地よさ。',
+ feel:['やわらか','南国','午後'],use:'旅行、リゾート、カフェ、料理、のんびりした休日の映像。',
+ ps:'bossa nova, nylon string guitar, soft brushed percussion, gentle upright bass, breezy afternoon, relaxed',
+ m:{b:66,e:36,s:18},
+ p:{bpm:128,hum:1,root:57,sc:MIN,bars:4,seed:7,prog:[[0,'m7'],[5,'m7'],[7,'7'],[0,'m6']],
+  dr:{k:'x.......x.......',ks:'soft',r:'x..x..x...x..x..',sh:'xxxxxxxxxxxxxxxx',hv:.5},
+  lay:[{r:'chord',i:'guitar',pat:'x..x..x...x..x..',v:.65,lo:52,hi:72,max:3,strum:.015},{r:'bass',i:'sine',pat:'x.....f.x.....f.',lo:33,v:.8},{r:'lead',i:'sine',dens:.25,lo:69,hi:86,v:.45,rest:.25,max:6,vib:1.4}],
+  rev:{len:1.5,mix:.2},lp:11000,gain:.9}},
+{id:'acoustic',cat:'genre',ja:'アコースティック',en:'Acoustic',h:85,alias:['アコギ','弾き語り風','フォーク','ナチュラル'],
+ desc:'アコースティックギターの指弾きを軸にした、飾らない音。電子音を使わず、手触りがある。',
+ feel:['素朴','温かい','朝'],use:'旅行、手作り、暮らしの映像、商品紹介、ナチュラル系ブランド。',
+ ps:'acoustic folk, fingerpicked acoustic guitar, warm and organic, light cajon, gentle whistle melody, sunny morning',
+ m:{b:78,e:24,s:15},
+ p:{bpm:96,hum:1,root:55,sc:MAJ,bars:4,seed:10,prog:[[0,'maj'],[7,'maj'],[9,'min'],[5,'maj']],
+  dr:{k:'x.......x.x.....',ks:'soft',s:'....x.......x...',ss:'rim',sh:'x.x.x.x.x.x.x.x.',hv:.5},
+  lay:[{r:'chord',i:'guitar',mode:'arp',rate:2,seq:[0,2,1,2,3,2,1,2],gate:2,v:.6,lo:50,hi:70},{r:'bass',i:'sine',pat:'x.......f.......',lo:33,v:.6,max:8},{r:'lead',i:'sine',dens:.3,lo:67,hi:86,v:.4,rest:.1,max:6}],
+  rev:{len:1.4,mix:.2},lp:11000,gain:.9}},
+{id:'piano',cat:'genre',ja:'ピアノソロ',en:'Solo piano',h:225,alias:['ピアノ','ピアノBGM','弾き語り','静かなピアノ'],
+ desc:'ピアノだけで奏でる曲。音の数が少ないぶん、一音ずつの響きと余白が際立つ。',
+ feel:['繊細','静か','感傷的'],use:'感動的なシーン、手紙、思い出の映像、結婚式のスライド。',
+ ps:'solo piano, gentle arpeggios, expressive melody, soft dynamics, intimate room reverb, emotional',
+ m:{b:46,e:12,s:55},
+ p:{bpm:72,root:60,sc:MAJ,bars:4,seed:14,prog:[[0,'maj7'],[9,'m7'],[5,'maj7'],[7,'sus4']],
+  lay:[{r:'chord',i:'piano',mode:'arp',rate:2,seq:[0,1,2,3,2,1,2,3],gate:3,v:.5,lo:48,hi:72},{r:'chord',i:'piano',pat:'x...............',v:.55,lo:36,hi:50,max:16},{r:'lead',i:'piano',dens:.3,lo:72,hi:91,v:.55,rest:.1,max:8,grid:2}],
+  rev:{len:2.8,mix:.35},lp:12000,gain:1.3}},
+{id:'chiptune',cat:'genre',ja:'チップチューン',en:'Chiptune',h:100,alias:['8ビット','ファミコン風','レトロゲーム','ゲーム音楽'],
+ desc:'昔のゲーム機の音源を模した、ピコピコした音の曲。矩形波とノイズだけで作る。',
+ feel:['ピコピコ','懐かしい','元気'],use:'レトロゲーム風の動画、ゲーム実況、コミカルな演出、タイトル画面。',
+ ps:'chiptune, 8-bit, square wave lead, fast arpeggios, noise percussion, retro video game music',
+ m:{b:88,e:78,s:5},
+ p:{bpm:150,root:60,sc:MAJ,bars:4,seed:15,prog:[[0,'maj'],[7,'maj'],[9,'min'],[5,'maj']],
+  dr:{k:'x...x...x...x...',ks:'soft',s:'....x.......x...',ss:'rim',h:'x.x.x.x.x.x.x.x.',hv:.5,fill:1},
+  lay:[{r:'chord',i:'sq',mode:'arp',rate:1,seq:[0,1,2,1],gate:.8,v:.4,lo:60,hi:76},{r:'bass',i:'sq',pat:'x.x.x.x.x.x.x.x.',lo:36,v:.8,max:2},{r:'lead',i:'sq',dens:.6,lo:72,hi:91,v:.55,rest:.1,max:4}],
+  rev:{len:.8,mix:.04},gain:.8}},
+{id:'citypop',cat:'genre',ja:'シティポップ',en:'City pop',h:345,alias:['80年代','ジャパニーズ','ファンク','AOR'],
+ desc:'80年代の日本の都会的なポップス。弾むベースとエレピ、きらびやかなコードが夜景に似合う。',
+ feel:['都会的','おしゃれ','夏の夜'],use:'夜景、ドライブ、ファッション、懐かしさを狙ったレトロな広告。',
+ ps:'japanese city pop, 80s funk groove, slap bass, electric piano chords, bright synth lead, glossy summer night',
+ m:{b:80,e:56,s:30},
+ p:{bpm:108,root:53,sc:MAJ,bars:4,seed:16,prog:[[0,'maj9'],[9,'m9'],[2,'m7'],[7,'9']],
+  dr:{k:'x...x...x...x...',ks:'punch',s:'....x.......x...',ss:'full',h:'x.x.x.x.x.x.x.x.',hv:.6,o:'..x...x...x...x.'},
+  lay:[{r:'bass',i:'saw',pat:'x..x..o.x..x..o.',lo:33,v:.65,max:3,gate:.8,cut:900},{r:'chord',i:'rhodes',pat:'x..x..x...x..x..',v:.55,lo:55,hi:76,max:3,strum:.01},{r:'pad',i:'pad',v:.35,cut:1800,lo:52,hi:76},{r:'lead',i:'saw',dens:.35,lo:69,hi:88,v:.3,rest:.15,max:6}],
+  rev:{len:1.8,mix:.25},lp:12000,gain:.85}},
+{id:'rock',cat:'genre',ja:'ロック',en:'Rock',h:2,alias:['バンド','ギター','パワーコード'],
+ desc:'歪んだギター、ベース、ドラムの4つで押す王道の編成。パワーコードの太い音が土台。',
+ feel:['力強い','熱い','荒々しい'],use:'スポーツ、アクション、オープニング、熱量を見せたい映像。',
+ ps:'driving rock, distorted electric guitar power chords, punchy drums, thick bass, energetic band sound',
+ m:{b:58,e:78,s:12},
+ p:{bpm:132,root:52,sc:MINP,bars:4,seed:17,prog:[[0,'5'],[10,'5'],[8,'5'],[5,'5']],
+  dr:{k:'x.......x.x.....',ks:'punch',s:'....x.......x...',ss:'full',h:'x.x.x.x.x.x.x.x.',hv:.5,fill:1},
+  lay:[{r:'chord',i:'dist',pat:'x.x.x.x.x.x.xxx.',v:.8,lo:40,hi:62,max:2,gate:.55},{r:'bass',i:'saw',pat:'x.x.x.x.x.x.x.x.',lo:33,v:.6,max:2,cut:500},{r:'lead',i:'dist',dens:.25,lo:64,hi:84,v:.4,rest:.3,max:6}],
+  rev:{len:1.2,mix:.15},lp:13000,gain:.8}},
+{id:'wafu',cat:'genre',ja:'和風',en:'Japanese traditional',h:15,alias:['和楽器','琴','太鼓','和'],
+ desc:'琴や太鼓など和楽器の響きを使った曲。5音で組む独特の旋律が、すぐに日本らしさを伝える。',
+ feel:['和','凛とした','静と動'],use:'日本文化、旅行、神社仏閣、時代劇風の演出、和食の紹介。',
+ ps:'traditional japanese music, plucked koto melody, deep taiko drums, shakuhachi flute, pentatonic scale, serene and noble',
+ m:{b:36,e:40,s:55},
+ p:{bpm:84,root:57,sc:HIR,bars:4,seed:18,prog:[[0,'sus2'],[0,'min'],[8,'maj7'],[7,'sus4']],
+  dr:{t:'x.......x.x.....',tf:80},
+  lay:[{r:'chord',i:'koto',mode:'arp',rate:4,seq:[0,2,1,2],gate:3,v:.5,lo:57,hi:76},{r:'lead',i:'koto',dens:.35,lo:69,hi:88,v:.6,rest:.2,max:6,grid:2},{r:'pad',i:'pad',v:.3,cut:900,a:1.2,lo:48,hi:68},{r:'lead',i:'sine',dens:.1,lo:62,hi:79,v:.3,grid:4,max:12,vib:1.6,rest:.4}],
+  rev:{len:3.2,mix:.45},lp:10000,gain:.9}},
+{id:'horror',cat:'genre',ja:'ホラー・ダークアンビエント',en:'Dark ambient',h:300,alias:['ホラー','不気味','怪談','ダーク'],
+ desc:'低いうなりと、ぶつかり合う音で不安を作る曲。メロディはなく、静けさそのものが怖い。',
+ feel:['不気味','暗い','不安'],use:'ホラー、ミステリー、廃墟探索、都市伝説、不穏な導入。',
+ ps:'dark ambient horror, low rumbling drone, dissonant clusters, distant metallic hits, eerie atmosphere, no melody',
+ m:{b:6,e:28,s:92},
+ p:{bpm:56,root:45,sc:PHR,bars:4,seed:19,prog:[[0,'clus'],[1,'dim'],[0,'clus'],[6,'dim']],
+  dr:{b:'x'+'.'.repeat(31)},
+  lay:[{r:'pad',i:'drone',hold:4,v:.7,lo:36,hi:55},{r:'pad',i:'pad',v:.3,cut:500,a:2.5,lo:44,hi:66},{r:'lead',i:'bell',dens:.06,lo:76,hi:96,v:.5,rest:.4,grid:4,max:16}],
+  fx:{n:'wind',v:.25},rev:{len:6,mix:.75},lp:9000,gain:.7}},
+{id:'pop',cat:'genre',ja:'ポップ',en:'Pop',h:55,alias:['ポップス','明るい','キャッチー','J-POP'],
+ desc:'覚えやすい旋律と、明るいコード進行で作る王道の曲調。誰が聴いても気持ちよく流れる。',
+ feel:['明るい','キャッチー','前向き'],use:'商品紹介、広告、イベント告知、ショート動画全般。',
+ ps:'upbeat pop, bright plucked synths, catchy melody, light claps, punchy kick, feel-good and polished',
+ m:{b:90,e:62,s:20},
+ p:{bpm:118,pump:.25,root:60,sc:MAJ,bars:4,seed:20,prog:[[0,'maj'],[7,'maj'],[9,'min'],[5,'maj']],
+  dr:{k:'x...x...x...x...',ks:'punch',c:'....x.......x...',o:'..x...x...x...x.',h:'x.x.x.x.x.x.x.x.',hv:.5},
+  lay:[{r:'pad',i:'pad',v:.4,cut:2400,lo:52,hi:76},{r:'chord',i:'pluck',pat:'x..x..x...x..x..',v:.6,lo:55,hi:76,max:2},{r:'bass',i:'saw',pat:'x.x.x.x.x.x.x.x.',lo:33,v:.6,max:2,cut:600},{r:'lead',i:'pluck',dens:.5,lo:72,hi:91,v:.55,rest:.1,max:3}],
+  rev:{len:1.8,mix:.25},lp:14000,gain:.85}}
+];
+TERMS=TERMS.concat([
+{id:'sad',cat:'mood',ja:'切ない',en:'Melancholic',h:225,alias:['せつない','哀愁','エモい','ビタースウィート','sad'],
+ desc:'胸が少し締めつけられる、悲しさと温かさが混ざった空気。短調のピアノと弦が合う。',
+ feel:['哀愁','やさしい','余韻'],use:'別れ、回想、手紙、雨の日、感動する場面。',
+ ps:'melancholic, bittersweet, tender piano and strings, slow and emotional, wistful',
+ m:{b:22,e:20,s:58},
+ p:{bpm:66,root:57,sc:MIN,bars:4,seed:21,prog:[[0,'min'],[8,'maj'],[3,'maj'],[10,'maj']],
+  lay:[{r:'chord',i:'piano',mode:'arp',rate:4,seq:[0,1,2,1],gate:3,v:.55,lo:50,hi:72},{r:'lead',i:'piano',dens:.28,lo:69,hi:88,v:.55,rest:.2,max:8,grid:2},{r:'pad',i:'pad',v:.4,cut:1100,a:.8,lo:48,hi:70},{r:'bass',i:'sine',pat:'x.......',lo:33,v:.55,max:8}],
+  rev:{len:3,mix:.4},lp:11000,gain:.95}},
+{id:'fresh',cat:'mood',ja:'爽やか',en:'Fresh / Uplifting',h:170,alias:['さわやか','清涼感','晴れやか','前向き'],
+ desc:'風が通るような明るさ。長調で、リズムは軽く、音が混み合わない。',
+ feel:['明るい','軽快','朝'],use:'朝のルーティン、スキンケア、飲料、新生活、旅行の出発。',
+ ps:'fresh and uplifting, breezy, sunny acoustic guitar, light percussion, bright major key, optimistic',
+ m:{b:88,e:48,s:25},
+ p:{bpm:120,root:62,sc:MAJ,bars:4,seed:22,prog:[[0,'maj'],[7,'maj'],[9,'min'],[5,'maj']],
+  dr:{k:'x.......x.......',ks:'soft',sh:'x.x.x.x.x.x.x.x.',hv:.6,c:'....x.......x...'},
+  lay:[{r:'chord',i:'guitar',pat:'x..x..x.x..x..x.',v:.65,lo:52,hi:72,max:3,strum:.013},{r:'bass',i:'sine',pat:'x.......f.......',lo:33,v:.6,max:8},{r:'lead',i:'pluck',dens:.45,lo:74,hi:91,v:.45,rest:.15,max:3}],
+  rev:{len:1.4,mix:.2},lp:14000,gain:.9}},
+{id:'calm',cat:'mood',ja:'穏やか',en:'Calm / Peaceful',h:150,alias:['おだやか','癒し','リラックス','安らぎ'],
+ desc:'何も起きない心地よさ。ゆっくりしたテンポと、角のない柔らかい音で作る。',
+ feel:['安らぎ','やわらか','ゆったり'],use:'睡眠、ヨガ、読書、ナレーションの背景、落ち着いた解説。',
+ ps:'calm and peaceful, soft electric piano, warm pads, gentle bells, slow tempo, relaxing',
+ m:{b:68,e:8,s:55},
+ p:{bpm:72,root:60,sc:MAJP,bars:4,seed:23,prog:[[0,'maj7'],[5,'maj7'],[9,'m7'],[7,'sus4']],
+  lay:[{r:'pad',i:'pad',v:.5,cut:1200,a:1.2,lo:48,hi:72},{r:'chord',i:'rhodes',mode:'arp',rate:4,seq:[0,1,2,3],gate:3,v:.5,lo:55,hi:76},{r:'lead',i:'bell',dens:.1,lo:76,hi:93,v:.4,rest:.3,grid:4,max:16}],
+  fx:{n:'wind',v:.07},rev:{len:3.5,mix:.45},lp:10000,gain:1.3}},
+{id:'tense',cat:'mood',ja:'緊張感',en:'Tense / Suspense',h:355,alias:['サスペンス','ハラハラ','スリル','不安'],
+ desc:'何かが起きそうな張りつめた空気。低い刻みと、すき間のある音で不安をあおる。',
+ feel:['ハラハラ','不安','迫る'],use:'事件の導入、追跡、謎解き、カウントダウン、ドキュメンタリーの山場。',
+ ps:'tense suspense, pulsing low synth ostinato, staccato strings, sparse percussion, dark and uneasy, building tension',
+ m:{b:15,e:58,s:50},
+ p:{bpm:100,root:48,sc:PHR,bars:4,seed:24,prog:[[0,'min'],[1,'maj'],[0,'min'],[6,'dim']],
+  dr:{h:'x.x.x.x.x.x.x.x.',hv:.3,t:'x...............',tf:60},
+  lay:[{r:'bass',i:'saw',pat:'xxxxxxxxxxxxxxxx',lo:33,v:.55,max:1,gate:.7,cut:300},{r:'chord',i:'strs',mode:'arp',rate:2,seq:[0,0,1,0,2,0,1,0],gate:.5,v:.5,lo:48,hi:62,cut:1800},{r:'pad',i:'drone',hold:4,v:.4,lo:36,hi:55},{r:'lead',i:'bell',dens:.07,lo:74,hi:94,v:.4,rest:.3,grid:4,max:16}],
+  rev:{len:3,mix:.4},lp:11000,gain:.9}},
+{id:'nostalgic',cat:'mood',ja:'ノスタルジック',en:'Nostalgic',h:38,alias:['懐かしい','レトロ','郷愁','昭和'],
+ desc:'古いアルバムをめくるような空気。オルゴール風の音と、少しくすんだ響きが合う。',
+ feel:['懐かしい','温かい','夕方'],use:'思い出の映像、昔の写真、故郷、レトロな商品紹介、結婚式。',
+ ps:'nostalgic, warm vintage tones, music box melody, soft electric piano, tape hiss, sentimental sunset',
+ m:{b:38,e:30,s:45},
+ p:{bpm:84,sw:.1,hum:1,root:55,sc:MAJ,bars:4,seed:25,prog:[[0,'maj7'],[9,'m7'],[2,'m7'],[7,'7']],
+  dr:{k:'x.......x.......',ks:'soft',sh:'x.x.x.x.x.x.x.x.',hv:.45},
+  lay:[{r:'chord',i:'rhodes',pat:'x.....x.x.......',v:.55,lo:55,hi:76,max:6,strum:.012},{r:'bass',i:'sine',pat:'x.......f.......',lo:33,v:.6,max:8},{r:'lead',i:'bell',dens:.25,lo:72,hi:91,v:.5,rest:.2,max:8,grid:2},{r:'pad',i:'pad',v:.25,cut:900,a:.8,lo:52,hi:70}],
+  fx:{n:'vinyl',v:.2},rev:{len:2.2,mix:.3},lp:6500,gain:.9}},
+{id:'dreamy',cat:'mood',ja:'幻想的',en:'Dreamy / Ethereal',h:280,alias:['ドリーミー','ファンタジー','夢のような','きらきら'],
+ desc:'現実から少し浮いた、夢の中の空気。きらきらした高い音と、広い残響が続く。',
+ feel:['ふわふわ','神秘的','きらめき'],use:'ファンタジー、星空、花、魔法、美容やコスメのイメージ映像。',
+ ps:'dreamy and ethereal, shimmering bells, lush floating pads, harp-like arpeggios, spacious reverb, fantasy',
+ m:{b:62,e:20,s:90},
+ p:{bpm:80,root:52,sc:LYD,bars:4,seed:26,prog:[[0,'maj9'],[2,'maj'],[9,'m9'],[7,'maj']],
+  lay:[{r:'pad',i:'pad',v:.55,cut:2400,a:1.5,lo:52,hi:76},{r:'chord',i:'bell',mode:'arp',rate:2,seq:[0,1,2,3,4,3,2,1],gate:2,v:.5,lo:64,hi:88},{r:'lead',i:'bell',dens:.12,lo:79,hi:96,v:.35,rest:.3,grid:4,max:16}],
+  rev:{len:5,mix:.6},lp:13000,gain:1.4}},
+{id:'comical',cat:'mood',ja:'コミカル',en:'Playful / Quirky',h:60,alias:['楽しい','ユーモラス','ひょうきん','かわいい'],
+ desc:'肩の力が抜けた、はずむ曲調。短く切った音と、跳ねるリズムで笑いを誘う。',
+ feel:['陽気','かわいい','とぼけた'],use:'バラエティ風、日常コント、子ども向け、ゆるい解説動画。',
+ ps:'playful and quirky, bouncy pizzicato, staccato plucks, light xylophone melody, comedic, cartoon style',
+ m:{b:78,e:66,s:12},
+ p:{bpm:132,sw:.25,root:60,sc:MAJ,bars:4,seed:27,prog:[[0,'maj'],[5,'maj'],[7,'7'],[0,'maj']],
+  dr:{k:'x.......x.......',ks:'soft',r:'....x.......x...'},
+  lay:[{r:'bass',i:'sine',pat:'x...o...x...o...',lo:33,v:.75,max:3,gate:.7},{r:'chord',i:'pluck',pat:'..x...x...x...x.',v:.55,lo:55,hi:74,max:2,gate:.6},{r:'lead',i:'pluck',dens:.55,lo:72,hi:91,v:.5,rest:.1,max:2,gate:.5}],
+  rev:{len:1,mix:.1},lp:14000,gain:.9}},
+{id:'driving',cat:'mood',ja:'疾走感',en:'Driving / Fast-paced',h:20,alias:['スピード感','勢い','アップテンポ','ハイテンション'],
+ desc:'前へ前へ進む勢い。速いテンポと、止まらない8分音符の刻みで体を動かす。',
+ feel:['勢い','熱い','前進'],use:'オープニング、スポーツ、乗り物、スピード感のある切り替え、まとめ動画。',
+ ps:'driving and fast-paced, 168 bpm, energetic band drive, pounding drums, eighth-note bass, soaring lead',
+ m:{b:58,e:96,s:25},
+ p:{bpm:168,pump:.2,root:57,sc:MIN,bars:4,seed:28,prog:[[0,'min'],[8,'maj'],[10,'maj'],[7,'min']],
+  dr:{k:'x...x...x...x...',ks:'punch',s:'....x.......x...',ss:'full',h:'x.x.x.x.x.x.x.x.',hv:.5,fill:1},
+  lay:[{r:'bass',i:'saw',pat:'x.x.x.x.x.x.x.x.',lo:33,v:.65,max:2,cut:600},{r:'chord',i:'saw',mode:'arp',rate:2,seq:[0,1,2,1,3,2,1,2],gate:.8,v:.4,lo:57,hi:76},{r:'pad',i:'pad',v:.4,cut:2200,lo:52,hi:76},{r:'lead',i:'saw',dens:.5,lo:69,hi:91,v:.4,rest:.1,max:4}],
+  rev:{len:1.6,mix:.2},lp:14000,gain:.85}},
+
+/* 効果音 */
+{id:'whoosh',cat:'sfx',ja:'ウーッシュ',en:'Whoosh',h:200,alias:['スウィッシュ','風切り音','シュッ','トランジション','場面転換'],
+ desc:'空気を切る音。画面の切り替えや、素早い動きのタイミングで入れると、動きに重みが出る。',
+ feel:['場面転換','スピード','軽い'],use:'カットのつなぎ、テロップの出入り、素早いカメラの動き、スライド切り替え。',
+ ps:'cinematic whoosh, fast air sweep, smooth transition sound effect, left to right',
+ sfx:'whoosh',shape:'swell',dur:1.4,m:{b:60,e:55,s:40}},
+{id:'impact',cat:'sfx',ja:'インパクト',en:'Impact / Hit',h:350,alias:['ヒット','ブーム','ドーン','打撃音'],
+ desc:'低い音がドンと鳴り、長い余韻が残る音。タイトルの登場や、場面の区切りを強く見せる。',
+ feel:['重い','衝撃','強調'],use:'タイトルの表示、衝撃の瞬間、予告の区切り、ナレーションの決めの一言。',
+ ps:'cinematic impact hit, deep sub boom, short noise burst, long reverb tail, trailer hit',
+ sfx:'impact',shape:'hit',dur:3,m:{b:20,e:85,s:80}},
+{id:'riser',cat:'sfx',ja:'ライザー',en:'Riser',h:30,alias:['上昇音','ビルドアップ','盛り上げ','スウェル'],
+ desc:'音がだんだん高く、大きくなっていく効果音。直後に来る山場への期待を高める。',
+ feel:['期待','上昇','緊張'],use:'サビ前、結果発表の直前、タイトル表示の前、カウントダウン。',
+ ps:'rising riser sound effect, tension build up, noise sweep rising in pitch, ends with a hit',
+ sfx:'riser',shape:'rise',dur:5.5,m:{b:60,e:80,s:50}},
+{id:'click',cat:'sfx',ja:'UIクリック',en:'UI click',h:215,alias:['タップ音','ボタン音','クリック','システム音','ピッ'],
+ desc:'ボタンを押したときの短い音。1回目はタップ、2回目は切り替えを表す上がる2音。',
+ feel:['短い','軽い','機械的'],use:'アプリ紹介、操作画面の解説、テロップのポップ、ゲームのメニュー。',
+ ps:'clean ui click, soft tap, subtle button press, minimal interface sound',
+ sfx:'click',shape:'taps',dur:1,m:{b:70,e:25,s:10}},
+{id:'chime',cat:'sfx',ja:'チャイム',en:'Success chime',h:50,alias:['決定音','正解','ピンポン','達成','キラキラ'],
+ desc:'高い音が上へ駆け上がる、明るい音。正解や達成、通知の「うまくいった」を知らせる。',
+ feel:['明るい','達成感','きらめき'],use:'クイズの正解、ミッション達成、通知、商品の「おすすめ」表示。',
+ ps:'bright success chime, ascending bell arpeggio, sparkling, positive notification sound',
+ sfx:'chime',shape:'arp',dur:2.2,m:{b:92,e:40,s:55}},
+{id:'laser',cat:'sfx',ja:'レーザー',en:'Laser zap',h:130,alias:['ビーム','SF','ピューン','シューティング'],
+ desc:'高い音から一気に落ちていく、SFらしい音。3連続で撃つと、戦闘の気配が出る。',
+ feel:['SF','鋭い','ゲーム'],use:'SF映像、シューティングゲーム、ロボット、近未来のUI演出。',
+ ps:'sci-fi laser zap, descending pitch sweep, three rapid shots, retro space blaster',
+ sfx:'laser',shape:'zaps',dur:1.3,m:{b:70,e:70,s:30}},
+{id:'glitch',cat:'sfx',ja:'グリッチ',en:'Glitch',h:290,alias:['ノイズ','バグ','デジタルノイズ','ビットクラッシュ'],
+ desc:'音が途切れたり繰り返したりする、壊れた機械のような音。画面の乱れと一緒に使うと効く。',
+ feel:['デジタル','異常','不安定'],use:'画面が乱れる演出、サイバー系、ホラーの異変、タイトルの切り替え。',
+ ps:'digital glitch sound effect, stuttering bit-crushed blips, data corruption, short and sharp',
+ sfx:'glitch',shape:'burst',dur:1.3,m:{b:45,e:75,s:20}},
+{id:'rain',cat:'sfx',ja:'雨音',en:'Rain ambience',h:205,alias:['環境音','アンビエンス','雨','しとしと'],
+ desc:'細かい粒の連なりで作る雨の音。曲の後ろに薄く重ねるだけで、場面の空気が決まる。',
+ feel:['しっとり','静か','日常'],use:'ローファイや切ないBGMの下敷き、窓辺の映像、読書、睡眠用。',
+ ps:'gentle rain ambience, steady rainfall on a window, soft droplets, calm background, no thunder',
+ sfx:'rain',shape:'noise',dur:6.2,m:{b:40,e:12,s:70}},
+{id:'heart',cat:'sfx',ja:'心音',en:'Heartbeat',h:0,alias:['ハートビート','鼓動','ドクドク'],
+ desc:'「ドクン、ドクン」と低く打つ2拍の音。緊張や恐怖、生命の気配を、音だけで伝える。',
+ feel:['緊張','生命感','低い'],use:'ホラーの導入、告白の前、緊迫した場面、医療や人体の解説。',
+ ps:'slow heartbeat, deep thumping pulse, close and intimate, tense atmosphere',
+ sfx:'heart',shape:'beats',dur:5.6,m:{b:12,e:35,s:35}}
+]);
+var COMBOS=[
+ {t:'雨の夜の作業用BGM',tg:['ローファイ','雨音','切ない'],d:'ゆっくり作業に集中したい夜向け。雨音は効果音として別に重ねても使えます。',
+  ps:'lo-fi hip hop, mellow rhodes, soft piano, light rain ambience, dusty vinyl crackle, melancholic, late night, 72 bpm, instrumental'},
+ {t:'商品紹介動画の明るいBGM',tg:['ポップ','爽やか','アコースティック'],d:'声の邪魔をしない軽さで、前向きな印象を作ります。',
+  ps:'upbeat acoustic pop, bright plucked guitar, light claps, fresh and uplifting, sunny, 118 bpm, instrumental'},
+ {t:'ホラーの導入',tg:['ホラー','緊張感','心音'],d:'メロディを足さず、低音とすき間で不安を作る組み合わせです。',
+  ps:'dark ambient, low drone, sparse metallic hits, slow heartbeat pulse, ominous and tense, 56 bpm, instrumental'}
+];
+(function(){
+'use strict';
+var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var byId={},playing=null,state={q:'',cat:'all'},cards={},visible={};
+TERMS.forEach(function(t){byId[t.id]=t});
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function norm(s){return(s||'').normalize('NFKC').toLowerCase().replace(/[ァ-ヶ]/g,function(ch){return String.fromCharCode(ch.charCodeAt(0)-96)})}
+var NN=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],NS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+function keyName(P){var pc=P.root%12,n=([4,6,11].indexOf(pc)>=0?NS:NN)[pc];return n+(P.sc[2]===3?'m':'')}
+function promptOf(t){return t.ps+(t.p?', '+t.p.bpm+' bpm':'')}
+var toastT;
+function toast(m){var e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('show')},1500)}
+function copyText(txt){
+ function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('コピーしました')}catch(e){toast('長押しで選択してコピーしてください')}ta.remove()}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('コピーしました')},fb)}else fb();
+}
+
+/* ---------- 再生 ---------- */
+function setPlaying(id){
+ playing=id;
+ $$('.card.is-on').forEach(function(c){c.classList.remove('is-on')});
+ $$('.dot.on').forEach(function(c){c.classList.remove('on')});
+ var now=$('#now');
+ if(id){
+  if(cards[id])cards[id].el.classList.add('is-on');
+  var d=$('.dot[data-id="'+id+'"]');if(d)d.classList.add('on');
+  $('#now-t').textContent='再生中  '+byId[id].ja+'  '+byId[id].en;now.classList.add('show');
+ }else now.classList.remove('show');
+}
+function play(id){
+ var t=byId[id];
+ if(playing===id&&t.p){AUD.stop();return}
+ var st=t.p?AUD.start(t.p):AUD.sfx(t.sfx);
+ st.onend=function(){if(playing===id)setPlaying(null)};
+ setPlaying(id);
+}
+document.addEventListener('visibilitychange',function(){if(document.hidden)AUD.stop()});
+$('#now-s').addEventListener('click',function(){AUD.stop()});
+$('#vol').addEventListener('input',function(e){AUD.setVol(e.target.value/100)});
+try{var sv=localStorage.getItem('bgm-vol');if(sv!==null){$('#vol').value=sv}}catch(e){}
+AUD.setVol($('#vol').value/100);
+$('#vol').addEventListener('change',function(e){try{localStorage.setItem('bgm-vol',e.target.value)}catch(x){}});
+
+/* ---------- カード ---------- */
+function meter(l,v){return'<div>'+l+'<i><s style="width:'+v+'%"></s></i></div>'}
+function cardHTML(t){
+ var P=t.p,hud=P?'<span>'+P.bpm+' BPM</span><span>Key '+keyName(P)+'</span>':'<span>効果音</span><span>'+t.dur+'秒</span>';
+ var ch=P?'<dl class="use"><dt>コード進行</dt><dd>'+AUD.chords(P).slice(0,4).map(function(c){return c.name}).join(' → ')+'</dd></dl>':'';
+ return'<div class="frame"><canvas></canvas><div class="hud">'+hud+'</div>'+
+ '<button class="play" type="button" aria-label="'+esc(t.ja)+'を再生"><svg class="pl" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13l11-6.5z"/></svg><svg class="st" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/></svg></button></div>'+
+ '<div class="body"><div class="names"><h3>'+esc(t.ja)+'</h3><span class="en">'+esc(t.en)+'</span></div>'+
+ '<p class="desc">'+esc(t.desc)+'</p>'+
+ '<div class="meters">'+meter('明るさ',t.m.b)+meter('激しさ',t.m.e)+meter('広がり',t.m.s)+'</div>'+
+ '<ul class="tags">'+t.feel.map(function(f){return'<li>'+esc(f)+'</li>'}).join('')+'</ul>'+
+ '<dl class="use"><dt>使いどころ</dt><dd>'+esc(t.use)+'</dd></dl>'+ch+
+ '<div class="prompt"><div class="lbl"><span>PROMPT</span><button class="copy" type="button">コピー</button></div><p class="ptext">'+esc(promptOf(t))+'</p></div></div>';
+}
+function build(){
+ var main=$('#main'),html='';
+ CATS.forEach(function(c){
+  html+='<section class="sec" id="sec-'+c.id+'" aria-labelledby="h-'+c.id+'"><div class="sec-head"><h2 id="h-'+c.id+'">'+c.name+'</h2><span class="en">'+c.en+'</span></div><p class="sec-lead">'+c.lead+'</p><div class="grid" id="grid-'+c.id+'"></div></section>';
+ });
+ html+='<div class="empty" id="empty" hidden>見つかりませんでした。別の言葉で探してみてください。</div>';
+ main.innerHTML=html;
+ TERMS.forEach(function(t){
+  var el=document.createElement('article');el.className='card';el.id='card-'+t.id;el.innerHTML=cardHTML(t);
+  $('#grid-'+t.cat).appendChild(el);
+  t._hay=norm([t.ja,t.en,t.alias.join(' '),t.feel.join(' '),t.use,t.desc,t.ps].join(' '));
+  var cv=$('canvas',el);cards[t.id]={el:el,cv:cv,t:t,vals:new Float32Array(36),peaks:null,col:-1};
+  $('.frame',el).addEventListener('click',function(e){play(t.id)});
+  $('.copy',el).addEventListener('click',function(){copyText(promptOf(t))});
+  io.observe(el);
+ });
+}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){var id=e.target.id.slice(5);if(e.isIntersecting){visible[id]=1;ensurePeaks(id)}else delete visible[id]})},{rootMargin:'80px'});
+
+/* ---------- 効果音の波形を先に描いておく ---------- */
+var peakQ=[],peakBusy=false;
+function ensurePeaks(id){
+ var c=cards[id];if(!c||!c.t.sfx||c.peaks||c.pend)return;c.pend=1;peakQ.push(id);runPeaks();
+}
+function runPeaks(){
+ if(peakBusy||!peakQ.length)return;peakBusy=true;var id=peakQ.shift(),c=cards[id];
+ try{
+  AUD.renderSfx(c.t.sfx,16000).then(function(buf){
+   var d=buf.getChannelData(0),N=96,pk=new Float32Array(N),per=Math.floor(d.length/N),i,j,m,mx=0.001,dur=c.t.dur/ (buf.length/buf.sampleRate);
+   var useN=Math.min(d.length,Math.floor((c.t.dur+.25)*buf.sampleRate));per=Math.floor(useN/N);
+   for(i=0;i<N;i++){m=0;for(j=i*per;j<(i+1)*per;j++){var a=Math.abs(d[j]);if(a>m)m=a}pk[i]=m;if(m>mx)mx=m}
+   for(i=0;i<N;i++)pk[i]=Math.pow(pk[i]/mx,.6);
+   c.peaks=pk;peakBusy=false;runPeaks();
+  },function(){peakBusy=false;runPeaks()});
+ }catch(e){peakBusy=false}
+}
+
+/* ---------- 描画 ---------- */
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fit(c){
+ var fr=c.cv.parentNode,dpr=Math.min(2,window.devicePixelRatio||1),w=Math.round(fr.clientWidth*dpr),h=Math.round(fr.clientHeight*dpr);
+ if(c.cv.width!==w||c.cv.height!==h){c.cv.width=w;c.cv.height=h}
+ return dpr;
+}
+function rowsOf(t){
+ if(t._rows)return t._rows;
+ var dr=t.p&&t.p.dr||{},o=[],defs=[['k','K'],['s','S'],['c','S'],['h','H'],['sh','H'],['t','T'],['b','B'],['r','R']],seen={};
+ defs.forEach(function(d){var s=dr[d[0]];if(s&&/[xorg]/.test(s.slice(0,16))&&!seen[d[1]]&&o.length<3){seen[d[1]]=1;o.push({l:d[1],s:s})}});
+ return(t._rows=o);
+}
+function drawMusic(c,tm,live){
+ var t=c.t,cv=c.cv,ctx=cv.getContext('2d'),dpr=fit(c),w=cv.width,h=cv.height,H=t.h,P=t.p,N=36,i,vals=c.vals,an=live?AUD.analyser():null;
+ ctx.fillStyle='#0b0a11';ctx.fillRect(0,0,w,h);
+ var level=0;
+ if(an){
+  var d=c.buf||(c.buf=new Uint8Array(an.frequencyBinCount));an.getByteFrequencyData(d);
+  for(i=0;i<N;i++){var ix=Math.floor(Math.pow(i/(N-1),1.9)*130)+1,v=Math.pow(d[ix]/255,1.35);vals[i]+=(v-vals[i])*.55;level+=vals[i]}
+  level/=N;
+ }else{
+  var ph=tm/1000*P.bpm/60,pulse=Math.exp(-(ph%1)*5),amp=.25+.5*t.m.e/100;
+  for(i=0;i<N;i++){var pr=Math.pow(1-i/N,.8),v2=(.07+.5*pr*(.5+.5*Math.sin(tm*.0016*(P.bpm/90)+i*.55+t.m.s*.03)))*amp+pulse*.22*pr*pr*amp;vals[i]+=(v2-vals[i])*.2;level+=vals[i]}
+  level/=N;
+ }
+ var g=ctx.createRadialGradient(w/2,h*.62,0,w/2,h*.62,w*.7);
+ g.addColorStop(0,'hsla('+H+',70%,45%,'+(.2+level*.5)+')');g.addColorStop(1,'hsla('+H+',70%,30%,0)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+ var rows=rowsOf(t),stripH=(rows.length?rows.length*(7*dpr+3*dpr)+22*dpr:34*dpr),base=h-stripH-14*dpr,maxH=base-h*.2,bw=w*.8/N,gap=bw*.3,x0=(w-N*bw)/2;
+ var gr=ctx.createLinearGradient(0,base-maxH,0,base);gr.addColorStop(0,'hsl('+H+',90%,72%)');gr.addColorStop(1,'hsl('+H+',75%,48%)');
+ for(i=0;i<N;i++){
+  var bh=Math.max(2*dpr,Math.min(1,vals[i]*1.15)*maxH);
+  ctx.fillStyle=gr;ctx.fillRect(x0+i*bw,base-bh,bw-gap,bh);
+  ctx.fillStyle='hsla('+H+',80%,60%,.16)';ctx.fillRect(x0+i*bw,base+2*dpr,bw-gap,bh*.28);
+ }
+ /* 下の段 */
+ var pos=live?AUD.pos():null,step=pos?Math.floor(pos.step%16):-1,bar=pos?pos.bar:-1,pad=14*dpr;
+ if(rows.length){
+  var gx=pad+14*dpr,gw=w-gx-pad,cw=(gw-15*2*dpr)/16,rh=7*dpr,y0=h-pad-rows.length*(rh+3*dpr)+3*dpr;
+  ctx.font='500 '+(9*dpr)+'px monospace';ctx.textBaseline='middle';
+  rows.forEach(function(r,ri){
+   var y=y0+ri*(rh+3*dpr);ctx.fillStyle='rgba(255,255,255,.5)';ctx.fillText(r.l,pad,y+rh/2);
+   for(var k=0;k<16;k++){
+    var ch=r.s.charAt(k%r.s.length),on=ch!=='.'&&ch!==' ',x=gx+k*(cw+2*dpr);
+    ctx.fillStyle=on?(k===step?'#fff':'hsla('+H+',85%,'+(ch==='x'||ch==='r'?'68%':'50%')+',.95)'):(k===step?'rgba(255,255,255,.35)':'rgba(255,255,255,.09)');
+    ctx.fillRect(x,y,cw,rh);
+   }
+  });
+ }else{
+  var chs=AUD.chords(P),n=Math.min(4,chs.length),sw=(w-pad*2-(n-1)*4*dpr)/n,yy=h-pad-16*dpr;
+  ctx.font='500 '+(10*dpr)+'px monospace';ctx.textBaseline='middle';
+  for(i=0;i<n;i++){
+   var cur=live&&(bar%n===i);
+   ctx.fillStyle=cur?'hsla('+H+',85%,65%,.95)':'rgba(255,255,255,.1)';ctx.fillRect(pad+i*(sw+4*dpr),yy,sw,16*dpr);
+   ctx.fillStyle=cur?'#0b0a11':'rgba(255,255,255,.75)';ctx.fillText(chs[i].name,pad+i*(sw+4*dpr)+6*dpr,yy+8*dpr);
+  }
+ }
+}
+function drawSfx(c,tm,live){
+ var t=c.t,cv=c.cv,ctx=cv.getContext('2d'),dpr=fit(c),w=cv.width,h=cv.height,H=t.h,pk=c.peaks;
+ ctx.fillStyle='#0b0a11';ctx.fillRect(0,0,w,h);
+ var st=live?AUD.active():null,prog=-1;
+ if(st&&st.kind==='s'){prog=(AUD.now()-st.t0)/st.dur;if(prog<0)prog=0;if(prog>1)prog=1}
+ var g=ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,w*.6);g.addColorStop(0,'hsla('+H+',70%,45%,'+(prog>=0?.28:.16)+')');g.addColorStop(1,'hsla('+H+',70%,30%,0)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+ var pad=16*dpr,N=pk?pk.length:96,bw=(w-pad*2)/N,mid=h*.54,mh=h*.30,i;
+ ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(pad,mid,w-pad*2,1*dpr);
+ if(pk){
+  for(i=0;i<N;i++){
+   var a=Math.max(.03,pk[i])*mh,x=pad+i*bw,on=prog>=0&&(i/N)<=prog*(t.dur/(t.dur+.25));
+   ctx.fillStyle=on?'hsl('+H+',90%,68%)':'hsla('+H+',60%,62%,.55)';
+   ctx.fillRect(x,mid-a,bw*.7,a*2);
+  }
+ }
+ /* 時間軸 */
+ ctx.font='500 '+(9*dpr)+'px monospace';ctx.textBaseline='alphabetic';ctx.fillStyle='rgba(255,255,255,.5)';
+ var secs=Math.ceil(t.dur),sx=(w-pad*2)/(t.dur+.25);
+ for(i=0;i<=secs;i++){var xx=pad+i*sx;ctx.fillRect(xx,h-pad-8*dpr,1*dpr,5*dpr);ctx.fillText(i+'s',xx+3*dpr,h-pad)}
+ if(prog>=0){var px=pad+prog*(t.dur/(t.dur+.25))*(w-pad*2);ctx.fillStyle='#fff';ctx.fillRect(px,mid-mh-6*dpr,1.5*dpr,mh*2+12*dpr)}
+}
+var last=0;
+function loop(tm){
+ requestAnimationFrame(loop);
+ if(tm-last<32)return;last=tm;
+ for(var id in visible){
+  var c=cards[id];if(!c)continue;
+  var live=playing===id;
+  if(reduce&&!live){if(c.drawn)continue}
+  c.drawn=1;
+  if(c.t.p)drawMusic(c,tm,live);else drawSfx(c,tm,live);
+ }
+}
+
+/* ---------- ムードマップ ---------- */
+function buildMap(){
+ var map=$('#map'),h='';
+ TERMS.filter(function(t){return t.cat!=='sfx'}).forEach(function(t){
+  var x=6+t.m.b*.88,y=8+(100-t.m.e)*.84;
+  h+='<button class="dot '+t.cat+'" type="button" data-id="'+t.id+'" style="left:'+x+'%;top:'+y+'%;--h:'+t.h+'" aria-label="'+esc(t.ja)+' '+esc(t.en)+'"><i></i><b>'+esc(t.ja.replace('・ダークアンビエント',''))+'</b></button>';
+ });
+ map.insertAdjacentHTML('beforeend',h);
+ map.addEventListener('click',function(e){var b=e.target.closest('.dot');if(!b)return;pickTerm(b.getAttribute('data-id'))});
+}
+var pickId=null;
+function pickTerm(id){
+ var t=byId[id];pickId=id;$('#pick').hidden=false;
+ $('#pk-nm').innerHTML=esc(t.ja)+'<small>'+esc(t.en)+'</small>';$('#pk-ds').textContent=t.desc;
+ $('#pk-go').setAttribute('href','#card-'+id);
+ play(id);
+}
+$('#pk-cp').addEventListener('click',function(){if(pickId)copyText(promptOf(byId[pickId]))});
+$('#pk-go').addEventListener('click',function(e){
+ e.preventDefault();if(!pickId)return;
+ state.q='';$('#q').value='';state.cat='all';applyFilter();
+ var el=cards[pickId].el;el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});el.classList.add('flash');setTimeout(function(){el.classList.remove('flash')},1600);
+});
+
+/* ---------- 絞り込み ---------- */
+function buildChips(){
+ var h='<button class="chip" type="button" data-c="all" aria-pressed="true">すべて '+TERMS.length+'</button>';
+ CATS.forEach(function(c){h+='<button class="chip" type="button" data-c="'+c.id+'" aria-pressed="false">'+c.name+' '+TERMS.filter(function(t){return t.cat===c.id}).length+'</button>'});
+ $('#chips').innerHTML=h;
+ $('#chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;state.cat=b.getAttribute('data-c');applyFilter();
+  if(state.cat!=='all'){var s=$('#sec-'+state.cat);if(s)s.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}});
+}
+function applyFilter(){
+ var toks=norm(state.q).split(/\s+/).filter(Boolean),n=0;
+ $$('.chip').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-c')===state.cat))});
+ TERMS.forEach(function(t){
+  var ok=(state.cat==='all'||t.cat===state.cat)&&toks.every(function(k){return t._hay.indexOf(k)>=0});
+  cards[t.id].el.hidden=!ok;if(ok)n++;
+ });
+ CATS.forEach(function(c){var any=TERMS.some(function(t){return t.cat===c.id&&!cards[t.id].el.hidden});$('#sec-'+c.id).hidden=!any});
+ $('#count').textContent=n+' / '+TERMS.length;$('#empty').hidden=n>0;
+}
+$('#q').addEventListener('input',function(e){state.q=e.target.value;applyFilter()});
+
+/* ---------- プロンプト作成 ---------- */
+function buildBuilder(){
+ var g=TERMS.filter(function(t){return t.cat==='genre'}),m=TERMS.filter(function(t){return t.cat==='mood'});
+ $('#b-g').innerHTML=g.map(function(t){return'<option value="'+t.id+'">'+esc(t.ja+'  '+t.en)+'</option>'}).join('');
+ $('#b-m').innerHTML='<option value="">指定しない</option>'+m.map(function(t){return'<option value="'+t.id+'">'+esc(t.ja+'  '+t.en)+'</option>'}).join('');
+ $('#b-g').value='lofi';$('#b-m').value='sad';
+ ['b-g','b-m','b-i','b-l','b-b'].forEach(function(id){$('#'+id).addEventListener('change',mk)});
+ $('#b-copy').addEventListener('click',function(){copyText($('#b-out').textContent)});
+ $('#b-play').addEventListener('click',function(){play($('#b-g').value)});
+ mk();
+ function mk(){
+  var gt=byId[$('#b-g').value],mt=byId[$('#b-m').value],tags=gt.ps.split(', ');
+  if(mt)mt.ps.split(', ').forEach(function(x){if(tags.indexOf(x)<0)tags.push(x)});
+  if($('#b-b').checked)tags.push(gt.p.bpm+' bpm');
+  if($('#b-l').checked)tags.push('seamless loop, steady energy');
+  if($('#b-i').checked)tags.push('instrumental');
+  var s=tags.join(', ');$('#b-out').textContent=s;
+ }
+}
+function buildCombos(){
+ $('#combos').innerHTML=COMBOS.map(function(c,i){return'<div class="combo-card"><h3>'+esc(c.t)+'</h3><div class="tg">'+c.tg.map(function(x){return'<span>'+esc(x)+'</span>'}).join('')+'</div><p>'+esc(c.d)+'</p><div class="prompt"><div class="lbl"><span>PROMPT</span><button class="copy" type="button" data-i="'+i+'">コピー</button></div><p class="ptext">'+esc(c.ps)+'</p></div></div>'}).join('');
+ $('#combos').addEventListener('click',function(e){var b=e.target.closest('.copy');if(b)copyText(COMBOS[+b.getAttribute('data-i')].ps)});
+}
+
+build();buildMap();buildChips();buildBuilder();buildCombos();applyFilter();
+requestAnimationFrame(loop);
+window.__bgm={play:play,cards:cards};
+})();
+</script>
